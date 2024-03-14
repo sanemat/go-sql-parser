@@ -5,33 +5,41 @@ import (
 	"testing"
 )
 
-func TestLexSingleKeyword(t *testing.T) {
-	input := "SELECT"
-	expected := []Token{
-		{Type: TokenKeyword, Literal: "SELECT"},
-		{Type: TokenEOF, Literal: ""},
+func TestLexer(t *testing.T) {
+	tests := []struct {
+		input    string
+		expected []Token
+	}{
+		{
+			"select",
+			[]Token{
+				{Type: TokenKeyword, Literal: "select"},
+				{Type: TokenEOF, Literal: ""},
+			},
+		},
+		{
+			"SELECT",
+			[]Token{
+				{Type: TokenKeyword, Literal: "SELECT"},
+				{Type: TokenEOF, Literal: ""},
+			},
+		},
+		{
+			"tablename",
+			[]Token{
+				{Type: TokenIdentifier, Literal: "tablename"},
+				{Type: TokenEOF, Literal: ""},
+			},
+		},
 	}
 
-	lexer := NewLexer(input)
-	tokens := lexer.Lex()
+	for i, tt := range tests {
+		lexer := NewLexer(tt.input)
+		tokens := lexer.Lex()
 
-	if !reflect.DeepEqual(tokens, expected) {
-		t.Errorf("TestLexSingleKeyword: unexpected tokens. expected=%+v, got=%+v", expected, tokens)
-	}
-}
-
-func TestLexIdentifier(t *testing.T) {
-	input := "tablename"
-	expected := []Token{
-		{Type: TokenIdentifier, Literal: "tablename"},
-		{Type: TokenEOF, Literal: ""},
-	}
-
-	lexer := NewLexer(input)
-	tokens := lexer.Lex()
-
-	if !reflect.DeepEqual(tokens, expected) {
-		t.Errorf("TestLexIdentifier: unexpected tokens. expected=%+v, got=%+v", expected, tokens)
+		if !reflect.DeepEqual(tokens, tt.expected) {
+			t.Errorf("Test case %d: unexpected tokens. expected=%+v, got=%+v", i, tt.expected, tokens)
+		}
 	}
 }
 
