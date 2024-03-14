@@ -1,47 +1,128 @@
 package sqlparser
 
-import "strings"
+import (
+	"strings"
+	"unicode"
+	"unicode/utf8"
+)
 
-// TokenType defines the type of tokens
+// TokenType defines the type of lexed tokens.
 type TokenType int
 
 const (
-	TokenIdentifier TokenType = iota // default type
-	TokenKeyword                     // reserved keywords
-	// Add more token types as needed
+	TokenError TokenType = iota
+	TokenEOF
+	TokenIdentifier
+	TokenKeyword
+	TokenSymbol
+	// Extend with more token types as needed (e.g., TokenString, TokenNumber)
 )
 
-// Token represents a lexical token
+// Token represents a lexed piece of the input.
 type Token struct {
 	Type    TokenType
 	Literal string
 }
 
-// keywords maps reserved SQL keywords to their token type
+// keywords defines SQL keywords to be recognized.
 var keywords = map[string]TokenType{
 	"SELECT": TokenKeyword,
 	"FROM":   TokenKeyword,
-	// Add all reserved SQL keywords here
+	// Add more SQL keywords here...
 }
 
-// isKeyword checks if a given identifier is a reserved keyword
-func isKeyword(identifier string) TokenType {
-	if tokType, ok := keywords[strings.ToUpper(identifier)]; ok {
-		return tokType
-	}
-	return TokenIdentifier
+// Lexer holds the state of the scanner.
+type Lexer struct {
+	input                  string  // Input string being scanned.
+	start, position, width int     // Start position of this item, current position, and width of last rune.
+	tokens                 []Token // Slice of tokens identified.
 }
 
-// tokenize simulates tokenizing an input SQL query (simplified)
-func tokenize(input string) []Token {
-	// This example splits input by spaces, a real lexer would be more sophisticated
-	words := strings.Split(input, " ")
-	tokens := make([]Token, 0, len(words))
+// NewLexer returns a new instance of Lexer.
+func NewLexer(input string) *Lexer {
+	return &Lexer{input: input}
+}
 
-	for _, word := range words {
-		tokType := isKeyword(word)
-		tokens = append(tokens, Token{Type: tokType, Literal: word})
+// Lex scans the input string and produces a slice of tokens.
+func (l *Lexer) Lex() []Token {
+	for state := lexText; state != nil; {
+		state = state(l)
 	}
+	return l.tokens
+}
 
-	return tokens
+// lexText is the lexer function for general text.
+func lexText(l *Lexer) stateFn {
+	for {
+		if strings.HasPrefix(l.input[l.position:], " ") {
+			if l.position > l.start {
+				l.emit(TokenIdentifier)
+			}
+			l.ignore()
+		} else if isLetter(l.peek()) {
+			return lexIdentifier
+		} else if l.next() == eof {
+			break
+		}
+	}
+	// Emit an EOF token when done.
+	l.emit(TokenEOF)
+	return nil
+}
+
+// lexIdentifier scans an alphanumeric identifier.
+func lexIdentifier(l *Lexer) stateFn {
+	for isLetter(l.peek()) || isDigit(l.peek()) {
+		l.next()
+	}
+	word := l.input[l.start:l.position]
+	if tokType, isKeyword := keywords[strings.ToUpper(word)]; isKeyword {
+		l.emit(tokType)
+	} else {
+		l.emit(TokenIdentifier)
+	}
+	return lexText
+}
+
+// stateFn represents the state of the lexer as a function that returns the next state.
+type stateFn func(*Lexer) stateFn
+
+func (l *Lexer) emit(t TokenType) {
+	l.tokens = append(l.tokens, Token{Type: t, Literal: l.input[l.start:l.position]})
+	l.start = l.position
+}
+
+func (l *Lexer) next() rune {
+	if l.position >= len(l.input) {
+		l.width = 0
+		return eof
+	}
+	r, w := utf8.DecodeRuneInString(l.input[l.position:])
+	l.width = w
+	l.position += l.width
+	return r
+}
+
+func (l *Lexer) ignore() {
+	l.start = l.position
+}
+
+func (l *Lexer) peek() rune {
+	r := l.next()
+	l.backup()
+	return r
+}
+
+func (l *Lexer) backup() {
+	l.position -= l.width
+}
+
+const eof = -1
+
+func isLetter(r rune) bool {
+	return unicode.IsLetter(r) || r == '_'
+}
+
+func isDigit(r rune) bool {
+	return unicode.IsDigit(r)
 }
