@@ -1,3 +1,3 @@
-module github.com/sanemat/go-boilerplate
+module github.com/sanemat/go-sql-parser
 
-go 1.21
+go 1.22.1
