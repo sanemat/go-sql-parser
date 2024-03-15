@@ -31,6 +31,15 @@ var keywords = map[string]TokenType{
 	// Add more SQL keywords here...
 }
 
+// Consider expanding this set based on the symbols you need to recognize.
+var symbols = map[rune]TokenType{
+	';': TokenSymbol,
+	',': TokenSymbol,
+	'*': TokenSymbol,
+	'=': TokenSymbol,
+	// Add more symbols as needed.
+}
+
 // Lexer holds the state of the scanner.
 type Lexer struct {
 	input                  string  // Input string being scanned.
@@ -51,23 +60,30 @@ func (l *Lexer) Lex() []Token {
 	return l.tokens
 }
 
-// lexText is the lexer function for general text.
+// / Extend lexText to recognize symbols.
 func lexText(l *Lexer) stateFn {
 	for {
-		if strings.HasPrefix(l.input[l.position:], " ") {
-			if l.position > l.start {
-				l.emit(TokenIdentifier)
-			}
+		switch r := l.next(); {
+		case r == eof:
+			l.emit(TokenEOF)
+			return nil
+		case isSpace(r):
 			l.ignore()
-		} else if isLetter(l.peek()) {
+		case isLetter(r):
+			l.backup()
 			return lexIdentifier
-		} else if l.next() == eof {
-			break
+		case isDigit(r):
+			l.backup()
+			// If you implement numeric literal recognition,
+			// you would transition to that state function here.
+		default:
+			if _, ok := symbols[r]; ok {
+				l.emit(TokenSymbol) // Emit the symbol as a token
+				return lexText
+			}
+			// Add error handling for unrecognized characters.
 		}
 	}
-	// Emit an EOF token when done.
-	l.emit(TokenEOF)
-	return nil
 }
 
 // lexIdentifier scans an alphanumeric identifier.
@@ -125,4 +141,8 @@ func isLetter(r rune) bool {
 
 func isDigit(r rune) bool {
 	return unicode.IsDigit(r)
+}
+
+func isSpace(r rune) bool {
+	return r == ' ' || r == '\t' || r == '\n' || r == '\r'
 }
