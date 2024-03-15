@@ -1,4 +1,4 @@
-# boilerplate
+# sql-parser
 
 ## Motivation
 
