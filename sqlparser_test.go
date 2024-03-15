@@ -31,6 +31,13 @@ func TestLexer(t *testing.T) {
 				{Type: TokenEOF, Literal: ""},
 			},
 		},
+		{
+			"*",
+			[]Token{
+				{Type: TokenSymbol, Literal: "*"},
+				{Type: TokenEOF, Literal: ""},
+			},
+		},
 	}
 
 	for i, tt := range tests {
