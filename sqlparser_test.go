@@ -38,6 +38,17 @@ func TestLexer(t *testing.T) {
 				{Type: TokenEOF, Literal: ""},
 			},
 		},
+		{
+			"select * from tablename;",
+			[]Token{
+				{Type: TokenKeyword, Literal: "select"},
+				{Type: TokenSymbol, Literal: "*"},
+				{Type: TokenKeyword, Literal: "from"},
+				{Type: TokenIdentifier, Literal: "tablename"},
+				{Type: TokenSymbol, Literal: ";"},
+				{Type: TokenEOF, Literal: ""},
+			},
+		},
 	}
 
 	for i, tt := range tests {
@@ -49,18 +60,3 @@ func TestLexer(t *testing.T) {
 		}
 	}
 }
-
-// func TestLexSymbol(t *testing.T) {
-// 	input := "*"
-// 	expected := []Token{
-// 		{Type: TokenSymbol, Literal: "*"},
-// 		{Type: TokenEOF, Literal: ""},
-// 	}
-
-// 	lexer := NewLexer(input)
-// 	tokens := lexer.Lex()
-
-// 	if !reflect.DeepEqual(tokens, expected) {
-// 		t.Errorf("TestLexSymbol: unexpected tokens. expected=%+v, got=%+v", expected, tokens)
-// 	}
-// }
