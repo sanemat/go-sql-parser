@@ -6,25 +6,6 @@ import (
 	"unicode/utf8"
 )
 
-// TokenType defines the type of lexed tokens.
-type TokenType int
-
-const (
-	TokenError TokenType = iota
-	TokenEOF
-	TokenIdentifier
-	TokenKeyword
-	TokenSymbol
-	TokenComment
-	// Extend with more token types as needed (e.g., TokenString, TokenNumber)
-)
-
-// Token represents a lexed piece of the input.
-type Token struct {
-	Type    TokenType
-	Literal string
-}
-
 // keywords defines SQL keywords to be recognized.
 var keywords = map[string]TokenType{
 	"SELECT": TokenKeyword,
