@@ -7,10 +7,12 @@ import (
 
 func TestLexer(t *testing.T) {
 	tests := []struct {
+		name     string
 		input    string
 		expected []Token
 	}{
 		{
+			"select lower case",
 			"select",
 			[]Token{
 				{Type: TokenKeyword, Literal: "select"},
@@ -18,6 +20,7 @@ func TestLexer(t *testing.T) {
 			},
 		},
 		{
+			"select upper case",
 			"SELECT",
 			[]Token{
 				{Type: TokenKeyword, Literal: "SELECT"},
@@ -25,6 +28,7 @@ func TestLexer(t *testing.T) {
 			},
 		},
 		{
+			"table name",
 			"tablename",
 			[]Token{
 				{Type: TokenIdentifier, Literal: "tablename"},
@@ -32,6 +36,7 @@ func TestLexer(t *testing.T) {
 			},
 		},
 		{
+			"asterisk",
 			"*",
 			[]Token{
 				{Type: TokenSymbol, Literal: "*"},
@@ -39,6 +44,7 @@ func TestLexer(t *testing.T) {
 			},
 		},
 		{
+			"simple select sql",
 			"select * from tablename;",
 			[]Token{
 				{Type: TokenKeyword, Literal: "select"},
@@ -50,20 +56,37 @@ func TestLexer(t *testing.T) {
 			},
 		},
 		{
-			"select # invalid sintax;",
+			"invalid syntax",
+			"select # invalid syntax;",
 			[]Token{
 				{Type: TokenKeyword, Literal: "select"},
 				{Type: TokenError, Literal: ""},
 			},
 		},
+		{
+			"multiple columns",
+			"select id, title from table1;",
+			[]Token{
+				{Type: TokenKeyword, Literal: "select"},
+				{Type: TokenIdentifier, Literal: "id"},
+				{Type: TokenSymbol, Literal: ","},
+				{Type: TokenIdentifier, Literal: "title"},
+				{Type: TokenKeyword, Literal: "from"},
+				{Type: TokenIdentifier, Literal: "table1"},
+				{Type: TokenSymbol, Literal: ";"},
+				{Type: TokenEOF, Literal: ""},
+			},
+		},
 	}
 
-	for i, tt := range tests {
-		lexer := NewLexer(tt.input)
-		tokens := lexer.Lex()
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			lexer := NewLexer(tt.input)
+			tokens := lexer.Lex()
 
-		if !reflect.DeepEqual(tokens, tt.expected) {
-			t.Errorf("Test case %d: unexpected tokens. expected=%+v, got=%+v", i, tt.expected, tokens)
-		}
+			if !reflect.DeepEqual(tokens, tt.expected) {
+				t.Errorf("unexpected tokens. expected=%+v, got=%+v", tt.expected, tokens)
+			}
+		})
 	}
 }
