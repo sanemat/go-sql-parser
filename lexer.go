@@ -32,6 +32,19 @@ var keywords = map[string]TokenType{
 	// Add more SQL keywords here...
 }
 
+var symbols = map[rune]TokenType{
+	';': TokenSymbol,
+	',': TokenSymbol,
+	'(': TokenSymbol,
+	')': TokenSymbol,
+	'=': TokenSymbol,
+	'*': TokenSymbol,
+	'+': TokenSymbol,
+	'-': TokenSymbol,
+	'/': TokenSymbol,
+	// Add more symbols as needed.
+}
+
 // Lexer holds the state of the scanner.
 type Lexer struct {
 	input                  string  // Input string being scanned.
@@ -152,19 +165,16 @@ func isDigit(r rune) bool {
 }
 
 func lexSymbol(l *Lexer) stateFn {
-	// Consume the symbol character
 	symbol := l.next()
-
-	// Emit the symbol as a token
-	l.emitToken(TokenSymbol, string(symbol))
-
-	// Return back to lexText to continue lexing
+	if tokenType, exists := symbols[symbol]; exists {
+		l.emitToken(tokenType, string(symbol))
+	}
 	return lexText
 }
 
 func isSymbol(r rune) bool {
-	// This covers basic SQL symbols, expand as needed
-	return strings.ContainsRune(";,()=*+-/", r)
+	_, exists := symbols[r]
+	return exists
 }
 
 // lexComment captures the entire line of a comment and emits it as a TokenComment.
