@@ -55,21 +55,21 @@ func (p *Parser) Parse() (Node, error) {
 func (p *Parser) parseSelect() (*SelectStatement, error) {
 	// For simplicity, this function assumes the tokens match the expected pattern.
 	// In practice, you would check token types and handle errors.
-	selectStmt := &SelectStatement{}
 	p.pos++ // Skip the SELECT token
 	columnList, err := p.parseSelectColumnList()
 	if err != nil {
 		return &SelectStatement{}, err
 	}
-	selectStmt.Columns = columnList
 	p.pos++ // Skip the FROM token
 	tableName, err := p.parseSelectTableName()
 	if err != nil {
 		return &SelectStatement{}, err
 	}
-	selectStmt.Table = tableName
 	// Optionally parse WHERE clause...
-	return selectStmt, nil
+	return &SelectStatement{
+		Columns: columnList,
+		Table:   tableName,
+	}, nil
 }
 
 // Additional parse functions (parseColumnList, parseTableName, parseWhereClause) need to be implemented
@@ -95,5 +95,8 @@ func (p *Parser) parseSelectColumnList() ([]string, error) {
 }
 
 func (p *Parser) parseSelectTableName() (string, error) {
-	return "table1", nil
+	if p.tokens[p.pos].Type != TokenIdentifier {
+		return "", fmt.Errorf("unexpected token %s", p.tokens[p.pos].Literal)
+	}
+	return p.tokens[p.pos].Literal, nil
 }
