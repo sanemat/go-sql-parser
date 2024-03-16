@@ -56,6 +56,19 @@ func TestLexer(t *testing.T) {
 				{Type: TokenError, Literal: ""},
 			},
 		},
+		{
+			"select id, title from table1;",
+			[]Token{
+				{Type: TokenKeyword, Literal: "select"},
+				{Type: TokenIdentifier, Literal: "id"},
+				{Type: TokenSymbol, Literal: ","},
+				{Type: TokenIdentifier, Literal: "title"},
+				{Type: TokenKeyword, Literal: "from"},
+				{Type: TokenIdentifier, Literal: "table1"},
+				{Type: TokenSymbol, Literal: ";"},
+				{Type: TokenEOF, Literal: ""},
+			},
+		},
 	}
 
 	for i, tt := range tests {
