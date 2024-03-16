@@ -52,6 +52,7 @@ func (l *Lexer) Lex() []Token {
 	return l.tokens
 }
 
+// lexText is the entry point for the lexing process. It determines the next state based on the current character.
 func lexText(l *Lexer) stateFn {
 	for {
 		switch {
@@ -107,6 +108,7 @@ func lexIdentifier(l *Lexer) stateFn {
 }
 
 // stateFn represents the state of the lexer as a function that returns the next state.
+// Each state function processes part of the input string and transitions the lexer to the next appropriate state.
 type stateFn func(*Lexer) stateFn
 
 func (l *Lexer) emit(t TokenType) {
