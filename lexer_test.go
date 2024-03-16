@@ -49,6 +49,13 @@ func TestLexer(t *testing.T) {
 				{Type: TokenEOF, Literal: ""},
 			},
 		},
+		{
+			"select # invalid sintax;",
+			[]Token{
+				{Type: TokenKeyword, Literal: "select"},
+				{Type: TokenError, Literal: ""},
+			},
+		},
 	}
 
 	for i, tt := range tests {
