@@ -98,10 +98,9 @@ func lexText(l *Lexer) stateFn {
 			return lexSymbol // Transition to a symbol handling state
 			// Handle other cases...
 		default:
-			// For symbols or other characters, handle accordingly.
-			// This might be where you'd add handling for symbols or punctuation,
-			// similar to how we're handling comments and identifiers.
-			l.next() // Advance lexer for any non-handled character
+			// The lexer encounters a character that does not match any known patterns
+			l.emit(TokenError)
+			return nil // Transition to an error state or halt lexing.
 		}
 	}
 }
