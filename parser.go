@@ -74,7 +74,24 @@ func (p *Parser) parseSelect() (*SelectStatement, error) {
 
 // Additional parse functions (parseColumnList, parseTableName, parseWhereClause) need to be implemented
 func (p *Parser) parseSelectColumnList() ([]string, error) {
-	return []string{"column1"}, nil
+	var columns []string
+	// Loop until we reach the "FROM" keyword
+	for p.tokens[p.pos].Type != TokenKeyword || strings.ToLower(p.tokens[p.pos].Literal) != "from" {
+		if p.tokens[p.pos].Type == TokenIdentifier {
+			// Add the column name to the list
+			columns = append(columns, p.tokens[p.pos].Literal)
+		} else if p.tokens[p.pos].Type == TokenSymbol && p.tokens[p.pos].Literal != "," {
+			// If the token is not an identifier or a comma, it's unexpected
+			return nil, fmt.Errorf("unexpected token %s", p.tokens[p.pos].Literal)
+		}
+		p.pos++ // Move to the next token
+	}
+
+	if len(columns) == 0 {
+		// If no columns were found, return an error
+		return nil, fmt.Errorf("no columns found in select statement")
+	}
+	return columns, nil
 }
 
 func (p *Parser) parseSelectTableName() (string, error) {

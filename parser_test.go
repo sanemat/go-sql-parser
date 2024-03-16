@@ -17,7 +17,7 @@ func TestParser(t *testing.T) {
 			name: "simple select",
 			input: []Token{
 				{Type: TokenKeyword, Literal: "select"},
-				{Type: TokenSymbol, Literal: "column1"},
+				{Type: TokenIdentifier, Literal: "column1"},
 				{Type: TokenKeyword, Literal: "from"},
 				{Type: TokenIdentifier, Literal: "tablename"},
 				{Type: TokenSymbol, Literal: ";"},
@@ -25,6 +25,24 @@ func TestParser(t *testing.T) {
 			},
 			want: &SelectStatement{
 				Columns: []string{"column1"},
+				Table:   "table1",
+				Where:   nil,
+			},
+		},
+		{
+			name: "select multiple columns",
+			input: []Token{
+				{Type: TokenKeyword, Literal: "select"},
+				{Type: TokenIdentifier, Literal: "id"},
+				{Type: TokenSymbol, Literal: ","},
+				{Type: TokenIdentifier, Literal: "title"},
+				{Type: TokenKeyword, Literal: "from"},
+				{Type: TokenIdentifier, Literal: "table1"},
+				{Type: TokenSymbol, Literal: ";"},
+				{Type: TokenEOF, Literal: ""},
+			},
+			want: &SelectStatement{
+				Columns: []string{"id", "title"},
 				Table:   "table1",
 				Where:   nil,
 			},
