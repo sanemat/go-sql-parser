@@ -10,10 +10,13 @@ const (
 	TokenKeyword
 	TokenSymbol
 	TokenComment
-	TokenNull
 	TokenStringLiteral
 	TokenNumericLiteral
+	TokenDateAndTimeLiteral
+	TokenHexadecimalLiteral
+	TokenBitValueLiteral
 	TokenBooleanLiteral
+	TokenNull
 	// Extend with more token types as needed (e.g., TokenString, TokenNumber)
 )
 
