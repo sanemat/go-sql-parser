@@ -95,6 +95,9 @@ func lexText(l *Lexer) stateFn {
 			l.emit(TokenEOF) // Emit EOF token
 			return nil       // No next state, lexing is complete
 		case isSymbol(l.peek()):
+			if l.position > l.start {
+				l.emit(TokenIdentifier)
+			}
 			return lexSymbol // Transition to a symbol handling state
 			// Handle other cases...
 		default:
