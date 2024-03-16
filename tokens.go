@@ -10,6 +10,11 @@ const (
 	TokenKeyword
 	TokenSymbol
 	TokenComment
+
+	TokenSelect
+	TokenFrom
+	TokenWhere
+	TokenInsert
 	// Extend with more token types as needed (e.g., TokenString, TokenNumber)
 )
 
