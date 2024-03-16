@@ -1,6 +1,7 @@
 package sqlparser
 
 import (
+	"errors"
 	"reflect"
 	"testing"
 )
@@ -47,8 +48,8 @@ func TestParser(t *testing.T) {
 					t.Errorf("Parser.Parse() = %+v, wantErr %+v", got, tt.wantErr)
 					return
 				}
-				if err != tt.wantErr {
-					t.Errorf("Parser.Parse() error = %v, wantErr %v", err, tt.wantErr)
+				if !errors.Is(err, tt.wantErr) {
+					t.Errorf("Parser.Parse() error = %+v, wantErr %+v", err, tt.wantErr)
 				}
 			}
 		})
