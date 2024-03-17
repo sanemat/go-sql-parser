@@ -107,7 +107,7 @@ func (p *Parser) parseSelectExpressions() ([]Expression, error) {
 
 		// If next token is a comma, skip it
 		nextToken := p.tokens[p.pos]
-		if nextToken.Type == TokenSymbol && nextToken.Literal == "," {
+		if nextToken.Type == TokenComma {
 			p.pos++ // Move forward the expression token
 		}
 	}

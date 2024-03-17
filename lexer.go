@@ -18,7 +18,7 @@ var keywords = map[string]TokenType{
 
 var symbols = map[rune]TokenType{
 	';': TokenSymbol,
-	',': TokenSymbol,
+	',': TokenComma,
 	'(': TokenSymbol,
 	')': TokenSymbol,
 	'=': TokenSymbol,
