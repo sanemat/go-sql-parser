@@ -8,11 +8,33 @@ import (
 // Node represents a node in the Abstract Syntax Tree (AST)
 type Node interface{}
 
+type Expression interface {
+	// Expression is a marker interface for all expression types
+}
+
+type ColumnExpression struct {
+	Name string
+}
+
+type BinaryExpression struct {
+	Left     Expression
+	Operator string
+	Right    Expression
+}
+
+type NumericLiteral struct {
+	Value float64
+}
+
+type StringLiteral struct {
+	Value string
+}
+
 // SelectStatement represents a parsed SELECT statement
 type SelectStatement struct {
-	Columns []string
-	Table   string
-	Where   *Condition
+	Expressions []Expression
+	Table       string
+	Where       *Condition
 }
 
 // Condition represents a condition in a WHERE clause
@@ -56,7 +78,7 @@ func (p *Parser) parseSelect() (*SelectStatement, error) {
 	// For simplicity, this function assumes the tokens match the expected pattern.
 	// In practice, you would check token types and handle errors.
 	p.pos++ // Skip the SELECT token
-	columnList, err := p.parseSelectColumnList()
+	expressions, err := p.parseSelectExpressions()
 	if err != nil {
 		return &SelectStatement{}, err
 	}
@@ -67,31 +89,50 @@ func (p *Parser) parseSelect() (*SelectStatement, error) {
 	}
 	// Optionally parse WHERE clause...
 	return &SelectStatement{
-		Columns: columnList,
-		Table:   tableName,
+		Expressions: expressions,
+		Table:       tableName,
 	}, nil
 }
 
-// Additional parse functions (parseColumnList, parseTableName, parseWhereClause) need to be implemented
-func (p *Parser) parseSelectColumnList() ([]string, error) {
-	var columns []string
-	// Loop until we reach the "FROM" keyword
-	for p.tokens[p.pos].Type != TokenKeyword || strings.ToUpper(p.tokens[p.pos].Literal) != "FROM" {
-		if p.tokens[p.pos].Type == TokenIdentifier {
-			// Add the column name to the list
-			columns = append(columns, p.tokens[p.pos].Literal)
-		} else if p.tokens[p.pos].Type == TokenSymbol && p.tokens[p.pos].Literal != "," {
-			// If the token is not an identifier or a comma, it's unexpected
-			return nil, fmt.Errorf("unexpected token %s", p.tokens[p.pos].Literal)
+func (p *Parser) parseSelectExpressions() ([]Expression, error) {
+	var expressions []Expression
+
+	// Continue looping until "FROM" keyword is encountered
+	for !(p.tokens[p.pos].Type == TokenKeyword && strings.ToUpper(p.tokens[p.pos].Literal) == "FROM") {
+		expr, err := p.parseExpression()
+		if err != nil {
+			return nil, fmt.Errorf("parseSelectExpressions: %w", err)
 		}
-		p.pos++ // Move to the next token
+		expressions = append(expressions, expr)
+
+		// If next token is a comma, skip it
+		nextToken := p.tokens[p.pos]
+		if nextToken.Type == TokenSymbol && nextToken.Literal == "," {
+			p.pos++ // Move forward the expression token
+		}
 	}
 
-	if len(columns) == 0 {
-		// If no columns were found, return an error
-		return nil, fmt.Errorf("no columns found in select statement")
+	// Handle edge case: No expressions before "FROM"
+	if len(expressions) == 0 {
+		return nil, fmt.Errorf("no expressions found in select statement")
 	}
-	return columns, nil
+
+	return expressions, nil
+}
+
+func (p *Parser) parseExpression() (Expression, error) {
+	// This is a simplified placeholder. You'll need to replace this with actual logic
+	// to parse different types of expressions based on your tokens.
+	token := p.tokens[p.pos]
+	switch token.Type {
+	case TokenIdentifier:
+		// This could be a column name or the beginning of a function call
+		p.pos++
+		return &ColumnExpression{Name: token.Literal}, nil
+	// Add cases for other types of expressions: NumericLiteral, BinaryExpression, etc.
+	default:
+		return nil, fmt.Errorf("unexpected token %s", token.Literal)
+	}
 }
 
 func (p *Parser) parseSelectTableName() (string, error) {
