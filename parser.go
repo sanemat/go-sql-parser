@@ -33,7 +33,7 @@ type StringLiteral struct {
 // SelectStatement represents a parsed SELECT statement
 type SelectStatement struct {
 	Expressions []Expression
-	Table       string
+	Table       *string
 	Where       *Condition
 }
 
@@ -82,15 +82,21 @@ func (p *Parser) parseSelect() (*SelectStatement, error) {
 	if err != nil {
 		return &SelectStatement{}, err
 	}
-	p.pos++ // Skip the FROM token
-	tableName, err := p.parseSelectTableName()
-	if err != nil {
-		return &SelectStatement{}, err
+
+	token := p.tokens[p.pos]
+	var tableNamePtr *string
+	if token.Type == TokenFrom {
+		p.pos++ // Skip the FROM token
+		tableName, err := p.parseSelectTableName()
+		if err != nil {
+			return &SelectStatement{}, err
+		}
+		tableNamePtr = &tableName
 	}
 	// Optionally parse WHERE clause...
 	return &SelectStatement{
 		Expressions: expressions,
-		Table:       tableName,
+		Table:       tableNamePtr,
 	}, nil
 }
 

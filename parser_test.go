@@ -27,7 +27,7 @@ func TestParser(t *testing.T) {
 				Expressions: []Expression{
 					&ColumnExpression{Name: "column1"},
 				},
-				Table: "tablea",
+				Table: addr("tablea"),
 				Where: nil,
 			},
 		},
@@ -48,7 +48,7 @@ func TestParser(t *testing.T) {
 					&ColumnExpression{Name: "id"},
 					&ColumnExpression{Name: "title"},
 				},
-				Table: "table1",
+				Table: addr("table1"),
 				Where: nil,
 			},
 		},
