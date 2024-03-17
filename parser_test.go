@@ -16,7 +16,7 @@ func TestParser(t *testing.T) {
 		{
 			name: "simple select",
 			input: []Token{
-				{Type: TokenKeyword, Literal: "select"},
+				{Type: TokenSelect, Literal: "select"},
 				{Type: TokenIdentifier, Literal: "column1"},
 				{Type: TokenKeyword, Literal: "from"},
 				{Type: TokenIdentifier, Literal: "tablea"},
@@ -34,7 +34,7 @@ func TestParser(t *testing.T) {
 		{
 			name: "select multiple columns",
 			input: []Token{
-				{Type: TokenKeyword, Literal: "select"},
+				{Type: TokenSelect, Literal: "select"},
 				{Type: TokenIdentifier, Literal: "id"},
 				{Type: TokenSymbol, Literal: ","},
 				{Type: TokenIdentifier, Literal: "title"},

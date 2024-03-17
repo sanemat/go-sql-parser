@@ -19,6 +19,8 @@ const (
 	TokenBitValueLiteral
 	TokenBooleanLiteral
 	TokenNull
+
+	TokenSelect
 	// Extend with more token types as needed (e.g., TokenString, TokenNumber)
 )
 
