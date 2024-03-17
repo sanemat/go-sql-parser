@@ -117,6 +117,14 @@ func TestLexer(t *testing.T) {
 				{Type: TokenEOF, Literal: ""},
 			},
 		},
+		{
+			"decimal points",
+			"1.23",
+			[]Token{
+				{Type: TokenNumericLiteral, Literal: "1.23"},
+				{Type: TokenEOF, Literal: ""},
+			},
+		},
 	}
 
 	for _, tt := range tests {
