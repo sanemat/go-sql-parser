@@ -11,6 +11,8 @@ var keywords = map[string]TokenType{
 	"SELECT": TokenKeyword,
 	"FROM":   TokenKeyword,
 	"NULL":   TokenNull,
+	"TRUE":   TokenBooleanLiteral,
+	"FALSE":  TokenBooleanLiteral,
 	// Add more SQL keywords here...
 }
 
