@@ -18,7 +18,7 @@ func TestParser(t *testing.T) {
 			input: []Token{
 				{Type: TokenSelect, Literal: "select"},
 				{Type: TokenIdentifier, Literal: "column1"},
-				{Type: TokenKeyword, Literal: "from"},
+				{Type: TokenFrom, Literal: "from"},
 				{Type: TokenIdentifier, Literal: "tablea"},
 				{Type: TokenSymbol, Literal: ";"},
 				{Type: TokenEOF, Literal: ""},
@@ -38,7 +38,7 @@ func TestParser(t *testing.T) {
 				{Type: TokenIdentifier, Literal: "id"},
 				{Type: TokenSymbol, Literal: ","},
 				{Type: TokenIdentifier, Literal: "title"},
-				{Type: TokenKeyword, Literal: "from"},
+				{Type: TokenFrom, Literal: "from"},
 				{Type: TokenIdentifier, Literal: "table1"},
 				{Type: TokenSymbol, Literal: ";"},
 				{Type: TokenEOF, Literal: ""},

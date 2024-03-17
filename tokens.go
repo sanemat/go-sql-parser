@@ -21,6 +21,7 @@ const (
 	TokenNull
 
 	TokenSelect
+	TokenFrom
 	// Extend with more token types as needed (e.g., TokenString, TokenNumber)
 )
 
