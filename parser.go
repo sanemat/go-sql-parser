@@ -141,11 +141,3 @@ func (p *Parser) parseSelectTableName() (string, error) {
 	}
 	return p.tokens[p.pos].Literal, nil
 }
-
-func (p *Parser) peekToken() Token {
-	peekPos := p.pos + 1
-	if peekPos >= len(p.tokens) {
-		return Token{Type: TokenEOF, Literal: ""}
-	}
-	return p.tokens[peekPos]
-}
