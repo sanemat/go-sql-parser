@@ -105,9 +105,9 @@ func (p *Parser) parseSelectExpressions() ([]Expression, error) {
 
 	// Continue looping until "FROM" is encountered
 	for !(p.tokens[p.pos].Type == TokenFrom) {
-		expr, err := p.parseExpression()
+		expr, err := p.parseSelectExpression()
 		if err != nil {
-			return nil, fmt.Errorf("parseSelectExpressions: %w", err)
+			return nil, fmt.Errorf("parseSelectExpression: %w", err)
 		}
 		expressions = append(expressions, expr)
 
@@ -126,7 +126,7 @@ func (p *Parser) parseSelectExpressions() ([]Expression, error) {
 	return expressions, nil
 }
 
-func (p *Parser) parseExpression() (Expression, error) {
+func (p *Parser) parseSelectExpression() (Expression, error) {
 	// This is a simplified placeholder. You'll need to replace this with actual logic
 	// to parse different types of expressions based on your tokens.
 	token := p.tokens[p.pos]
