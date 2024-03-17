@@ -2,6 +2,7 @@ package sqlparser
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
 )
 
@@ -118,7 +119,7 @@ func (p *Parser) parseSelectExpressions() ([]Expression, error) {
 		}
 	}
 
-	// Handle edge case: No expressions before "FROM"
+	// Handle edge case: No expressions
 	if len(expressions) == 0 {
 		return nil, fmt.Errorf("no expressions found in select statement")
 	}
@@ -135,6 +136,13 @@ func (p *Parser) parseSelectExpression() (Expression, error) {
 		// This could be a column name or the beginning of a function call
 		p.pos++
 		return &ColumnExpression{Name: token.Literal}, nil
+	case TokenNumericLiteral:
+		p.pos++
+		numFloat, err := strconv.ParseFloat(token.Literal, 64)
+		if err != nil {
+			return nil, fmt.Errorf("parseSelectExpression strconv.ParseFloat num %s, err: %w", token.Literal, err)
+		}
+		return &NumericLiteral{Value: numFloat}, nil
 	// Add cases for other types of expressions: NumericLiteral, BinaryExpression, etc.
 	default:
 		return nil, fmt.Errorf("unexpected token %s", token.Literal)
