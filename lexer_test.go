@@ -85,6 +85,22 @@ func TestLexer(t *testing.T) {
 				{Type: TokenEOF, Literal: ""},
 			},
 		},
+		{
+			"true value",
+			"true",
+			[]Token{
+				{Type: TokenBooleanLiteral, Literal: "true"},
+				{Type: TokenEOF, Literal: ""},
+			},
+		},
+		{
+			"false value",
+			"false",
+			[]Token{
+				{Type: TokenBooleanLiteral, Literal: "false"},
+				{Type: TokenEOF, Literal: ""},
+			},
+		},
 	}
 
 	for _, tt := range tests {
