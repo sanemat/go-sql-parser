@@ -20,7 +20,7 @@ func TestParser(t *testing.T) {
 				{Type: TokenIdentifier, Literal: "column1"},
 				{Type: TokenFrom, Literal: "from"},
 				{Type: TokenIdentifier, Literal: "tablea"},
-				{Type: TokenSemiColumn, Literal: ";"},
+				{Type: TokenSemicolon, Literal: ";"},
 				{Type: TokenEOF, Literal: ""},
 			},
 			want: &SelectStatement{
@@ -40,7 +40,7 @@ func TestParser(t *testing.T) {
 				{Type: TokenIdentifier, Literal: "title"},
 				{Type: TokenFrom, Literal: "from"},
 				{Type: TokenIdentifier, Literal: "table1"},
-				{Type: TokenSemiColumn, Literal: ";"},
+				{Type: TokenSemicolon, Literal: ";"},
 				{Type: TokenEOF, Literal: ""},
 			},
 			want: &SelectStatement{
@@ -57,7 +57,7 @@ func TestParser(t *testing.T) {
 			input: []Token{
 				{Type: TokenSelect, Literal: "select"},
 				{Type: TokenNumericLiteral, Literal: "1"},
-				{Type: TokenSemiColumn, Literal: ";"},
+				{Type: TokenSemicolon, Literal: ";"},
 				{Type: TokenEOF, Literal: ""},
 			},
 			want: &SelectStatement{

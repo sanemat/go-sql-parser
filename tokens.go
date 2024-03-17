@@ -23,7 +23,7 @@ const (
 	TokenSelect
 	TokenFrom
 	TokenComma
-	TokenSemiColumn
+	TokenSemicolon
 	// Extend with more token types as needed (e.g., TokenString, TokenNumber)
 )
 
