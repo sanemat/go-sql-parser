@@ -101,6 +101,22 @@ func TestLexer(t *testing.T) {
 				{Type: TokenEOF, Literal: ""},
 			},
 		},
+		{
+			"number",
+			"123",
+			[]Token{
+				{Type: TokenNumericLiteral, Literal: "123"},
+				{Type: TokenEOF, Literal: ""},
+			},
+		},
+		{
+			"big number",
+			"1230000000000000000000000000000000000000000",
+			[]Token{
+				{Type: TokenNumericLiteral, Literal: "1230000000000000000000000000000000000000000"},
+				{Type: TokenEOF, Literal: ""},
+			},
+		},
 	}
 
 	for _, tt := range tests {
