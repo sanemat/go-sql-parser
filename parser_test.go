@@ -24,9 +24,11 @@ func TestParser(t *testing.T) {
 				{Type: TokenEOF, Literal: ""},
 			},
 			want: &SelectStatement{
-				Columns: []string{"column1"},
-				Table:   "tablea",
-				Where:   nil,
+				Expressions: []Expression{
+					&ColumnExpression{Name: "column1"},
+				},
+				Table: "tablea",
+				Where: nil,
 			},
 		},
 		{
@@ -42,9 +44,12 @@ func TestParser(t *testing.T) {
 				{Type: TokenEOF, Literal: ""},
 			},
 			want: &SelectStatement{
-				Columns: []string{"id", "title"},
-				Table:   "table1",
-				Where:   nil,
+				Expressions: []Expression{
+					&ColumnExpression{Name: "id"},
+					&ColumnExpression{Name: "title"},
+				},
+				Table: "table1",
+				Where: nil,
 			},
 		},
 	}
