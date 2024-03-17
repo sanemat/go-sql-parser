@@ -57,7 +57,7 @@ func TestParser(t *testing.T) {
 			input: []Token{
 				{Type: TokenSelect, Literal: "select"},
 				{Type: TokenNumericLiteral, Literal: "1"},
-				{Type: TokenSymbol, Literal: ";"},
+				{Type: TokenSemiColumn, Literal: ";"},
 				{Type: TokenEOF, Literal: ""},
 			},
 			want: &SelectStatement{
