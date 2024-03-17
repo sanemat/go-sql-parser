@@ -97,8 +97,8 @@ func (p *Parser) parseSelect() (*SelectStatement, error) {
 func (p *Parser) parseSelectExpressions() ([]Expression, error) {
 	var expressions []Expression
 
-	// Continue looping until "FROM" keyword is encountered
-	for !(p.tokens[p.pos].Type == TokenKeyword && strings.ToUpper(p.tokens[p.pos].Literal) == "FROM") {
+	// Continue looping until "FROM" is encountered
+	for !(p.tokens[p.pos].Type == TokenFrom) {
 		expr, err := p.parseExpression()
 		if err != nil {
 			return nil, fmt.Errorf("parseSelectExpressions: %w", err)

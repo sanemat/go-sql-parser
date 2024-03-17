@@ -49,7 +49,7 @@ func TestLexer(t *testing.T) {
 			[]Token{
 				{Type: TokenSelect, Literal: "select"},
 				{Type: TokenSymbol, Literal: "*"},
-				{Type: TokenKeyword, Literal: "from"},
+				{Type: TokenFrom, Literal: "from"},
 				{Type: TokenIdentifier, Literal: "tablename"},
 				{Type: TokenSymbol, Literal: ";"},
 				{Type: TokenEOF, Literal: ""},
@@ -71,7 +71,7 @@ func TestLexer(t *testing.T) {
 				{Type: TokenIdentifier, Literal: "id"},
 				{Type: TokenSymbol, Literal: ","},
 				{Type: TokenIdentifier, Literal: "title"},
-				{Type: TokenKeyword, Literal: "from"},
+				{Type: TokenFrom, Literal: "from"},
 				{Type: TokenIdentifier, Literal: "table1"},
 				{Type: TokenSymbol, Literal: ";"},
 				{Type: TokenEOF, Literal: ""},
