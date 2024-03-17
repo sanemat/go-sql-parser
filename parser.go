@@ -97,32 +97,25 @@ func (p *Parser) parseSelect() (*SelectStatement, error) {
 func (p *Parser) parseSelectExpressions() ([]Expression, error) {
 	var expressions []Expression
 
-	// Loop until we reach the "FROM" keyword
+	// Continue looping until "FROM" keyword is encountered
 	for !(p.tokens[p.pos].Type == TokenKeyword && strings.ToUpper(p.tokens[p.pos].Literal) == "FROM") {
-		// Parse an expression
 		expr, err := p.parseExpression()
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("parseSelectExpressions: %w", err)
 		}
 		expressions = append(expressions, expr)
 
-		// Check if the next token is a comma. If so, skip it.
+		// If next token is a comma, skip it
 		if p.peekToken().Literal == "," {
-			p.pos += 2 // Skip the comma and move to the next expression
-			continue
-		} else if p.peekToken().Type == TokenKeyword && strings.ToUpper(p.peekToken().Literal) == "FROM" {
-			p.pos++ // Move past the last expression before the FROM keyword
-			break
-		} else {
-			// Handle unexpected tokens
-			return nil, fmt.Errorf("unexpected token %s", p.peekToken().Literal)
+			p.pos++ // Move past the expression token
 		}
 	}
 
+	// Handle edge case: No expressions before "FROM"
 	if len(expressions) == 0 {
-		// If no expressions were found, return an error.
 		return nil, fmt.Errorf("no expressions found in select statement")
 	}
+
 	return expressions, nil
 }
 

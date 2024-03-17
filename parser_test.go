@@ -60,7 +60,7 @@ func TestParser(t *testing.T) {
 			got, err := p.Parse()
 			if tt.wantErr == nil {
 				if err != nil {
-					t.Errorf("Praser.Parse() error = %+v, want %+v", err, tt.want)
+					t.Errorf("Praser.Parse() error = %+v, at position %d, want %+v", err, p.pos, tt.want)
 					return
 				}
 				if !reflect.DeepEqual(got, tt.want) {
@@ -72,7 +72,7 @@ func TestParser(t *testing.T) {
 					return
 				}
 				if !errors.Is(err, tt.wantErr) {
-					t.Errorf("Parser.Parse() error = %+v, wantErr %+v", err, tt.wantErr)
+					t.Errorf("Parser.Parse() error = %+v, at position %d, wantErr %+v", err, p.pos, tt.wantErr)
 				}
 			}
 		})
