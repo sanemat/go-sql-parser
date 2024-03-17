@@ -66,6 +66,11 @@ func lexText(l *Lexer) stateFn {
 				l.emit(TokenIdentifier) // This may not be necessary depending on your overall design.
 			}
 			return lexIdentifier
+		case isDigit(l.peek()):
+			if l.position > l.start {
+				l.emit(TokenIdentifier) // This may not be necessary depending on your overall design.
+			}
+			return lexNumeric
 		case isWhitespace(l.peek()):
 			if l.position > l.start {
 				l.emit(TokenIdentifier) // Emit identifier if whitespace follows directly after
@@ -222,4 +227,14 @@ func lexWhitespace(l *Lexer) stateFn {
 // Helper functions to classify characters
 func isWhitespace(r rune) bool {
 	return unicode.IsSpace(r)
+}
+
+// lexNumeric scans a numeric identifier.
+func lexNumeric(l *Lexer) stateFn {
+	for isDigit(l.peek()) {
+		l.next()
+	}
+	num := l.input[l.start:l.position]
+	l.emitToken(TokenNumericLiteral, num)
+	return lexText
 }
