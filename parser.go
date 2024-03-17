@@ -98,22 +98,29 @@ func (p *Parser) parseSelectExpressions() ([]Expression, error) {
 	var expressions []Expression
 
 	// Loop until we reach the "FROM" keyword
-	for p.tokens[p.pos].Type != TokenKeyword || strings.ToUpper(p.tokens[p.pos].Literal) != "FROM" {
-		expr, err := p.parseExpression() // Use the new parseExpression method
+	for !(p.tokens[p.pos].Type == TokenKeyword && strings.ToUpper(p.tokens[p.pos].Literal) == "FROM") {
+		// Parse an expression
+		expr, err := p.parseExpression()
 		if err != nil {
 			return nil, err
 		}
 		expressions = append(expressions, expr)
 
-		// Handling commas between expressions
-		peakToken := p.peekToken()
-		if peakToken.Type == TokenSymbol && peakToken.Literal == "," {
-			p.pos++ // Skip the comma
+		// Check if the next token is a comma. If so, skip it.
+		if p.peekToken().Literal == "," {
+			p.pos += 2 // Skip the comma and move to the next expression
+			continue
+		} else if p.peekToken().Type == TokenKeyword && strings.ToUpper(p.peekToken().Literal) == "FROM" {
+			p.pos++ // Move past the last expression before the FROM keyword
+			break
+		} else {
+			// Handle unexpected tokens
+			return nil, fmt.Errorf("unexpected token %s", p.peekToken().Literal)
 		}
 	}
 
 	if len(expressions) == 0 {
-		// If no expressions were found, return an error
+		// If no expressions were found, return an error.
 		return nil, fmt.Errorf("no expressions found in select statement")
 	}
 	return expressions, nil
