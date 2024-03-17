@@ -231,9 +231,21 @@ func isWhitespace(r rune) bool {
 
 // lexNumeric scans a numeric identifier.
 func lexNumeric(l *Lexer) stateFn {
-	for isDigit(l.peek()) {
-		l.next()
+	// Initial state allows digits and a single decimal point.
+	seenDecimal := false
+	for {
+		r := l.peek()
+		if isDigit(r) {
+			l.next()
+		} else if r == '.' && !seenDecimal {
+			// Ensure only a single decimal point is read.
+			seenDecimal = true
+			l.next()
+		} else {
+			break // Exit on any non-numeric character
+		}
 	}
+
 	num := l.input[l.start:l.position]
 	l.emitToken(TokenNumericLiteral, num)
 	return lexText
