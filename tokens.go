@@ -1,5 +1,7 @@
 package sqlparser
 
+import "fmt"
+
 // TokenType defines the type of lexed tokens.
 type TokenType int
 
@@ -24,4 +26,8 @@ const (
 type Token struct {
 	Type    TokenType
 	Literal string
+}
+
+func (t Token) String() string {
+	return fmt.Sprintf("token Type: %d, Literal: %s", t.Type, t.Literal)
 }
