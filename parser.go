@@ -2,6 +2,7 @@ package sqlparser
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
 )
 
@@ -103,11 +104,11 @@ func (p *Parser) parseSelect() (*SelectStatement, error) {
 func (p *Parser) parseSelectExpressions() ([]Expression, error) {
 	var expressions []Expression
 
-	// Continue looping until "FROM" is encountered
-	for !(p.tokens[p.pos].Type == TokenFrom) {
-		expr, err := p.parseExpression()
+	// Continue looping until "FROM" is encountered or until semi column
+	for !(p.tokens[p.pos].Type == TokenFrom || p.tokens[p.pos].Type == TokenSemiColumn) {
+		expr, err := p.parseSelectExpression()
 		if err != nil {
-			return nil, fmt.Errorf("parseSelectExpressions: %w", err)
+			return nil, fmt.Errorf("parseSelectExpression: %w", err)
 		}
 		expressions = append(expressions, expr)
 
@@ -118,7 +119,7 @@ func (p *Parser) parseSelectExpressions() ([]Expression, error) {
 		}
 	}
 
-	// Handle edge case: No expressions before "FROM"
+	// Handle edge case: No expressions
 	if len(expressions) == 0 {
 		return nil, fmt.Errorf("no expressions found in select statement")
 	}
@@ -126,7 +127,7 @@ func (p *Parser) parseSelectExpressions() ([]Expression, error) {
 	return expressions, nil
 }
 
-func (p *Parser) parseExpression() (Expression, error) {
+func (p *Parser) parseSelectExpression() (Expression, error) {
 	// This is a simplified placeholder. You'll need to replace this with actual logic
 	// to parse different types of expressions based on your tokens.
 	token := p.tokens[p.pos]
@@ -135,6 +136,13 @@ func (p *Parser) parseExpression() (Expression, error) {
 		// This could be a column name or the beginning of a function call
 		p.pos++
 		return &ColumnExpression{Name: token.Literal}, nil
+	case TokenNumericLiteral:
+		p.pos++
+		numFloat, err := strconv.ParseFloat(token.Literal, 64)
+		if err != nil {
+			return nil, fmt.Errorf("parseSelectExpression strconv.ParseFloat num %s, err: %w", token.Literal, err)
+		}
+		return &NumericLiteral{Value: numFloat}, nil
 	// Add cases for other types of expressions: NumericLiteral, BinaryExpression, etc.
 	default:
 		return nil, fmt.Errorf("unexpected token %s", token.Literal)

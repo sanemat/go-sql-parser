@@ -52,6 +52,22 @@ func TestParser(t *testing.T) {
 				Where: nil,
 			},
 		},
+		{
+			name: "select 1;",
+			input: []Token{
+				{Type: TokenSelect, Literal: "select"},
+				{Type: TokenNumericLiteral, Literal: "1"},
+				{Type: TokenSemiColumn, Literal: ";"},
+				{Type: TokenEOF, Literal: ""},
+			},
+			want: &SelectStatement{
+				Expressions: []Expression{
+					&NumericLiteral{Value: 1},
+				},
+				Table: nil,
+				Where: nil,
+			},
+		},
 	}
 
 	for _, tt := range tests {
