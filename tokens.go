@@ -22,6 +22,7 @@ const (
 
 	TokenSelect
 	TokenFrom
+	TokenComma
 	// Extend with more token types as needed (e.g., TokenString, TokenNumber)
 )
 
