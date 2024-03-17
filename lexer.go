@@ -10,6 +10,7 @@ import (
 var keywords = map[string]TokenType{
 	"SELECT": TokenKeyword,
 	"FROM":   TokenKeyword,
+	"NULL":   TokenNull,
 	// Add more SQL keywords here...
 }
 

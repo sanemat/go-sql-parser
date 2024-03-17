@@ -77,6 +77,14 @@ func TestLexer(t *testing.T) {
 				{Type: TokenEOF, Literal: ""},
 			},
 		},
+		{
+			"null value",
+			"null",
+			[]Token{
+				{Type: TokenNull, Literal: "null"},
+				{Type: TokenEOF, Literal: ""},
+			},
+		},
 	}
 
 	for _, tt := range tests {
