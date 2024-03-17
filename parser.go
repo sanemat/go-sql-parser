@@ -60,12 +60,12 @@ func (p *Parser) Parse() (Node, error) {
 	if len(p.tokens) == 0 {
 		return nil, fmt.Errorf("no tokens to parse")
 	}
-
+	token := p.tokens[p.pos]
 	// Check the first significant token to determine the statement type
-	switch strings.ToUpper(p.tokens[p.pos].Literal) {
-	case "SELECT":
+	switch {
+	case token.Type == TokenSelect:
 		return p.parseSelect()
-	case "INSERT":
+	case strings.ToUpper(token.Literal) == "INSERT":
 		// return p.parseInsert() // Assuming you have a parseInsert method
 		return nil, fmt.Errorf("parseInsert is not implemented yet")
 	default:

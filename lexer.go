@@ -8,7 +8,7 @@ import (
 
 // keywords defines SQL keywords to be recognized.
 var keywords = map[string]TokenType{
-	"SELECT": TokenKeyword,
+	"SELECT": TokenSelect,
 	"FROM":   TokenKeyword,
 	"NULL":   TokenNull,
 	"TRUE":   TokenBooleanLiteral,

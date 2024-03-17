@@ -15,7 +15,7 @@ func TestLexer(t *testing.T) {
 			"select lower case",
 			"select",
 			[]Token{
-				{Type: TokenKeyword, Literal: "select"},
+				{Type: TokenSelect, Literal: "select"},
 				{Type: TokenEOF, Literal: ""},
 			},
 		},
@@ -23,7 +23,7 @@ func TestLexer(t *testing.T) {
 			"select upper case",
 			"SELECT",
 			[]Token{
-				{Type: TokenKeyword, Literal: "SELECT"},
+				{Type: TokenSelect, Literal: "SELECT"},
 				{Type: TokenEOF, Literal: ""},
 			},
 		},
@@ -47,7 +47,7 @@ func TestLexer(t *testing.T) {
 			"simple select sql",
 			"select * from tablename;",
 			[]Token{
-				{Type: TokenKeyword, Literal: "select"},
+				{Type: TokenSelect, Literal: "select"},
 				{Type: TokenSymbol, Literal: "*"},
 				{Type: TokenKeyword, Literal: "from"},
 				{Type: TokenIdentifier, Literal: "tablename"},
@@ -59,7 +59,7 @@ func TestLexer(t *testing.T) {
 			"invalid syntax",
 			"select # invalid syntax;",
 			[]Token{
-				{Type: TokenKeyword, Literal: "select"},
+				{Type: TokenSelect, Literal: "select"},
 				{Type: TokenError, Literal: ""},
 			},
 		},
@@ -67,7 +67,7 @@ func TestLexer(t *testing.T) {
 			"multiple columns",
 			"select id, title from table1;",
 			[]Token{
-				{Type: TokenKeyword, Literal: "select"},
+				{Type: TokenSelect, Literal: "select"},
 				{Type: TokenIdentifier, Literal: "id"},
 				{Type: TokenSymbol, Literal: ","},
 				{Type: TokenIdentifier, Literal: "title"},
