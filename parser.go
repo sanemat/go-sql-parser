@@ -40,10 +40,10 @@ func (p *Parser) Parse() (Node, error) {
 	}
 
 	// Check the first significant token to determine the statement type
-	switch strings.ToLower(p.tokens[p.pos].Literal) {
-	case "select":
+	switch strings.ToUpper(p.tokens[p.pos].Literal) {
+	case "SELECT":
 		return p.parseSelect()
-	case "insert":
+	case "INSERT":
 		// return p.parseInsert() // Assuming you have a parseInsert method
 		return nil, fmt.Errorf("parseInsert is not implemented yet")
 	default:
@@ -76,7 +76,7 @@ func (p *Parser) parseSelect() (*SelectStatement, error) {
 func (p *Parser) parseSelectColumnList() ([]string, error) {
 	var columns []string
 	// Loop until we reach the "FROM" keyword
-	for p.tokens[p.pos].Type != TokenKeyword || strings.ToLower(p.tokens[p.pos].Literal) != "from" {
+	for p.tokens[p.pos].Type != TokenKeyword || strings.ToUpper(p.tokens[p.pos].Literal) != "FROM" {
 		if p.tokens[p.pos].Type == TokenIdentifier {
 			// Add the column name to the list
 			columns = append(columns, p.tokens[p.pos].Literal)
