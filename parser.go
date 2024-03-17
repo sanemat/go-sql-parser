@@ -104,8 +104,8 @@ func (p *Parser) parseSelect() (*SelectStatement, error) {
 func (p *Parser) parseSelectExpressions() ([]Expression, error) {
 	var expressions []Expression
 
-	// Continue looping until "FROM" is encountered or until semi column
-	for !(p.tokens[p.pos].Type == TokenFrom || p.tokens[p.pos].Type == TokenSemiColumn) {
+	// Continue looping until "FROM" is encountered or until semicolon
+	for !(p.tokens[p.pos].Type == TokenFrom || p.tokens[p.pos].Type == TokenSemicolon) {
 		expr, err := p.parseSelectExpression()
 		if err != nil {
 			return nil, fmt.Errorf("parseSelectExpression: %w", err)
