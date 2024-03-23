@@ -12,7 +12,7 @@ import (
 type Node interface{}
 
 type Expression interface {
-	// Expression is a marker interface for all expression types
+	String() string
 }
 
 type ColumnExpression struct {
@@ -194,4 +194,38 @@ func (p *Parser) parseSelectTableName() (string, error) {
 	tableName := p.tokens[p.pos].Literal
 	p.pos++ // Move past the table name.
 	return tableName, nil
+}
+
+func (s *SelectStatement) String() string {
+	expressions := make([]string, len(s.Expressions))
+	for i, expr := range s.Expressions {
+		expressions[i] = expr.String()
+	}
+	tableName := "nil"
+	if s.Table != nil {
+		tableName = *s.Table
+	}
+	return fmt.Sprintf(
+		"SelectStatement(Expressions: [%s], Table: %s)",
+		strings.Join(expressions, ", "), tableName)
+}
+
+func (c *ColumnExpression) String() string {
+	return fmt.Sprintf("ColumnExpression(%s)", c.Name)
+}
+
+func (n *NumericLiteral) String() string {
+	return fmt.Sprintf("NumericLiteral(%f)", n.Value)
+}
+
+func (s *StringLiteral) String() string {
+	return fmt.Sprintf("StringLiteral('%s')", s.Value)
+}
+
+func (n *NullValue) String() string {
+	return "NullValue(NULL)"
+}
+
+func (b *BooleanLiteral) String() string {
+	return fmt.Sprintf("BooleanLiteral(%t)", b.Value)
 }
