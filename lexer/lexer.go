@@ -6,6 +6,8 @@ import (
 	"github.com/sanemat/go-sql-parser/tokens"
 )
 
+const eof = -1
+
 // keywords defines SQL keywords to be recognized.
 var keywords = map[string]tokens.TokenType{
 	"SELECT": tokens.TokenSelect,
@@ -53,8 +55,6 @@ func (l *Lexer) emit(t tokens.TokenType) {
 	l.tokens = append(l.tokens, tokens.Token{Type: t, Literal: l.input[l.start:l.position]})
 	l.start = l.position
 }
-
-const eof = -1
 
 func (l *Lexer) next() rune {
 	if l.position >= len(l.input) {

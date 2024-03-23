@@ -21,6 +21,8 @@ func lexText(l *Lexer) stateFn {
 			return lexNumeric
 		case isWhitespace(l.peek()):
 			return lexWhitespace
+		case l.peek() == '\'': // Handle string literals
+			return lexString
 		case l.peek() == eof:
 			l.emit(tokens.TokenEOF)
 			return nil
@@ -96,4 +98,29 @@ func lexComment(l *Lexer) stateFn {
 	commentText := l.input[l.start:l.position]
 	l.emitToken(tokens.TokenComment, commentText)
 	return lexText
+}
+
+// lexString scans a string literal enclosed in single quotes.
+func lexString(l *Lexer) stateFn {
+	l.next() // Skip the initial single quote
+	for {
+		switch r := l.peek(); {
+		case r == eof:
+			// EOF before closing quote
+			l.emit(tokens.TokenError)
+			return nil
+		case r == '\'' && l.peekAhead(1) != '\'':
+			// End of string literal
+			l.next() // Consume the closing quote
+			stringText := l.input[l.start:l.position]
+			l.emitToken(tokens.TokenStringLiteral, stringText)
+			return lexText
+		case r == '\'' && l.peekAhead(1) == '\'':
+			// Escaped quote
+			l.next() // Consume the first quote
+			l.next() // Consume the second quote
+		default:
+			l.next() // Consume the next character
+		}
+	}
 }
