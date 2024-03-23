@@ -31,6 +31,9 @@ type StringLiteral struct {
 	Value string
 }
 
+type NullValue struct {
+}
+
 // SelectStatement represents a parsed SELECT statement
 type SelectStatement struct {
 	Expressions []Expression
@@ -143,7 +146,9 @@ func (p *Parser) parseSelectExpression() (Expression, error) {
 			return nil, fmt.Errorf("parseSelectExpression strconv.ParseFloat num %s, err: %w", token.Literal, err)
 		}
 		return &NumericLiteral{Value: numFloat}, nil
-	// Add cases for other types of expressions: NumericLiteral, BinaryExpression, etc.
+	case TokenNull:
+		p.pos++
+		return &NullValue{}, nil
 	default:
 		return nil, fmt.Errorf("unexpected token %s", token.Literal)
 	}
