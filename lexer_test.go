@@ -125,6 +125,19 @@ func TestLexer(t *testing.T) {
 				{Type: TokenEOF, Literal: ""},
 			},
 		},
+		{
+			"multiple statements",
+			"select 1; select 2;",
+			[]Token{
+				{Type: TokenSelect, Literal: "select"},
+				{Type: TokenNumericLiteral, Literal: "1"},
+				{Type: TokenSemicolon, Literal: ";"},
+				{Type: TokenSelect, Literal: "select"},
+				{Type: TokenNumericLiteral, Literal: "2"},
+				{Type: TokenSemicolon, Literal: ";"},
+				{Type: TokenEOF, Literal: ""},
+			},
+		},
 	}
 
 	for _, tt := range tests {
