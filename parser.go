@@ -63,8 +63,22 @@ func NewParser(tokens []Token) *Parser {
 	return &Parser{tokens: tokens}
 }
 
-// Parse starts the parsing process and returns the AST
-func (p *Parser) Parse() (Node, error) {
+// Parse starts the parsing process and returns the ASTs
+func (p *Parser) Parse() ([]Node, error) {
+	var statements []Node
+	if len(p.tokens) == 0 {
+		return nil, fmt.Errorf("no tokens to parse")
+	}
+	stmt, err := p.parseStatement()
+	if err != nil {
+		return nil, fmt.Errorf("parseStatement, err: %w", err)
+	}
+	statements = append(statements, stmt)
+	return statements, nil
+}
+
+// parseStatement is the entry point for parsing a single SQL statement.
+func (p *Parser) parseStatement() (Node, error) {
 	if len(p.tokens) == 0 {
 		return nil, fmt.Errorf("no tokens to parse")
 	}

@@ -23,12 +23,14 @@ func TestParser(t *testing.T) {
 				{Type: TokenSemicolon, Literal: ";"},
 				{Type: TokenEOF, Literal: ""},
 			},
-			want: &SelectStatement{
-				Expressions: []Expression{
-					&ColumnExpression{Name: "column1"},
+			want: []Node{
+				&SelectStatement{
+					Expressions: []Expression{
+						&ColumnExpression{Name: "column1"},
+					},
+					Table: addr("tablea"),
+					Where: nil,
 				},
-				Table: addr("tablea"),
-				Where: nil,
 			},
 		},
 		{
@@ -43,13 +45,15 @@ func TestParser(t *testing.T) {
 				{Type: TokenSemicolon, Literal: ";"},
 				{Type: TokenEOF, Literal: ""},
 			},
-			want: &SelectStatement{
-				Expressions: []Expression{
-					&ColumnExpression{Name: "id"},
-					&ColumnExpression{Name: "title"},
+			want: []Node{
+				&SelectStatement{
+					Expressions: []Expression{
+						&ColumnExpression{Name: "id"},
+						&ColumnExpression{Name: "title"},
+					},
+					Table: addr("table1"),
+					Where: nil,
 				},
-				Table: addr("table1"),
-				Where: nil,
 			},
 		},
 		{
@@ -60,12 +64,14 @@ func TestParser(t *testing.T) {
 				{Type: TokenSemicolon, Literal: ";"},
 				{Type: TokenEOF, Literal: ""},
 			},
-			want: &SelectStatement{
-				Expressions: []Expression{
-					&NumericLiteral{Value: 1},
+			want: []Node{
+				&SelectStatement{
+					Expressions: []Expression{
+						&NumericLiteral{Value: 1},
+					},
+					Table: nil,
+					Where: nil,
 				},
-				Table: nil,
-				Where: nil,
 			},
 		},
 		{
@@ -76,12 +82,14 @@ func TestParser(t *testing.T) {
 				{Type: TokenSemicolon, Literal: ";"},
 				{Type: TokenEOF, Literal: ""},
 			},
-			want: &SelectStatement{
-				Expressions: []Expression{
-					&NullValue{},
+			want: []Node{
+				&SelectStatement{
+					Expressions: []Expression{
+						&NullValue{},
+					},
+					Table: nil,
+					Where: nil,
 				},
-				Table: nil,
-				Where: nil,
 			},
 		},
 		{
@@ -92,12 +100,14 @@ func TestParser(t *testing.T) {
 				{Type: TokenSemicolon, Literal: ";"},
 				{Type: TokenEOF, Literal: ""},
 			},
-			want: &SelectStatement{
-				Expressions: []Expression{
-					&BooleanLiteral{Value: false},
+			want: []Node{
+				&SelectStatement{
+					Expressions: []Expression{
+						&BooleanLiteral{Value: false},
+					},
+					Table: nil,
+					Where: nil,
 				},
-				Table: nil,
-				Where: nil,
 			},
 		},
 		{
@@ -108,12 +118,14 @@ func TestParser(t *testing.T) {
 				{Type: TokenSemicolon, Literal: ";"},
 				{Type: TokenEOF, Literal: ""},
 			},
-			want: &SelectStatement{
-				Expressions: []Expression{
-					&BooleanLiteral{Value: true},
+			want: []Node{
+				&SelectStatement{
+					Expressions: []Expression{
+						&BooleanLiteral{Value: true},
+					},
+					Table: nil,
+					Where: nil,
 				},
-				Table: nil,
-				Where: nil,
 			},
 		},
 	}
