@@ -155,7 +155,7 @@ func (p *Parser) parseSelectExpression() (Expression, error) {
 		return &NullValue{}, nil
 	case TokenBooleanLiteral:
 		p.pos++
-		bl, err := strconv.ParseBool(token.Literal)
+		bl, err := strconv.ParseBool(strings.ToLower(token.Literal))
 		if err != nil {
 			return nil, fmt.Errorf("parseSelectExpression strconv.ParseBool str %s, err: %w", token.Literal, err)
 		}
