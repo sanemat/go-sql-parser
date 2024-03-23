@@ -68,6 +68,22 @@ func TestParser(t *testing.T) {
 				Where: nil,
 			},
 		},
+		{
+			name: "select null",
+			input: []Token{
+				{Type: TokenSelect, Literal: "select"},
+				{Type: TokenNull, Literal: "null"},
+				{Type: TokenSemicolon, Literal: ";"},
+				{Type: TokenEOF, Literal: ""},
+			},
+			want: &SelectStatement{
+				Expressions: []Expression{
+					&NullValue{},
+				},
+				Table: nil,
+				Where: nil,
+			},
+		},
 	}
 
 	for _, tt := range tests {
