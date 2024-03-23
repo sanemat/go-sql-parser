@@ -1,9 +1,11 @@
-package sqlparser
+package parser
 
 import (
 	"fmt"
 	"strconv"
 	"strings"
+
+	"github.com/sanemat/go-sql-parser/tokens"
 )
 
 // Node represents a node in the Abstract Syntax Tree (AST)
@@ -54,12 +56,12 @@ type Condition struct {
 
 // Parser holds the state of the parser
 type Parser struct {
-	tokens []Token
+	tokens []tokens.Token
 	pos    int // current position in the token slice
 }
 
 // NewParser creates a new Parser instance
-func NewParser(tokens []Token) *Parser {
+func NewParser(tokens []tokens.Token) *Parser {
 	return &Parser{tokens: tokens}
 }
 
@@ -85,7 +87,7 @@ func (p *Parser) parseStatement() (Node, error) {
 	token := p.tokens[p.pos]
 	// Check the first significant token to determine the statement type
 	switch {
-	case token.Type == TokenSelect:
+	case token.Type == tokens.TokenSelect:
 		return p.parseSelect()
 	case strings.ToUpper(token.Literal) == "INSERT":
 		// return p.parseInsert() // Assuming you have a parseInsert method
@@ -107,7 +109,7 @@ func (p *Parser) parseSelect() (*SelectStatement, error) {
 
 	token := p.tokens[p.pos]
 	var tableNamePtr *string
-	if token.Type == TokenFrom {
+	if token.Type == tokens.TokenFrom {
 		p.pos++ // Skip the FROM token
 		tableName, err := p.parseSelectTableName()
 		if err != nil {
@@ -126,7 +128,7 @@ func (p *Parser) parseSelectExpressions() ([]Expression, error) {
 	var expressions []Expression
 
 	// Continue looping until "FROM" is encountered or until semicolon
-	for !(p.tokens[p.pos].Type == TokenFrom || p.tokens[p.pos].Type == TokenSemicolon) {
+	for !(p.tokens[p.pos].Type == tokens.TokenFrom || p.tokens[p.pos].Type == tokens.TokenSemicolon) {
 		expr, err := p.parseSelectExpression()
 		if err != nil {
 			return nil, fmt.Errorf("parseSelectExpression: %w", err)
@@ -135,7 +137,7 @@ func (p *Parser) parseSelectExpressions() ([]Expression, error) {
 
 		// If next token is a comma, skip it
 		nextToken := p.tokens[p.pos]
-		if nextToken.Type == TokenComma {
+		if nextToken.Type == tokens.TokenComma {
 			p.pos++ // Move forward the expression token
 		}
 	}
@@ -153,21 +155,21 @@ func (p *Parser) parseSelectExpression() (Expression, error) {
 	// to parse different types of expressions based on your tokens.
 	token := p.tokens[p.pos]
 	switch token.Type {
-	case TokenIdentifier:
+	case tokens.TokenIdentifier:
 		// This could be a column name or the beginning of a function call
 		p.pos++
 		return &ColumnExpression{Name: token.Literal}, nil
-	case TokenNumericLiteral:
+	case tokens.TokenNumericLiteral:
 		p.pos++
 		numFloat, err := strconv.ParseFloat(token.Literal, 64)
 		if err != nil {
 			return nil, fmt.Errorf("parseSelectExpression strconv.ParseFloat num %s, err: %w", token.Literal, err)
 		}
 		return &NumericLiteral{Value: numFloat}, nil
-	case TokenNull:
+	case tokens.TokenNull:
 		p.pos++
 		return &NullValue{}, nil
-	case TokenBooleanLiteral:
+	case tokens.TokenBooleanLiteral:
 		p.pos++
 		bl, err := strconv.ParseBool(strings.ToLower(token.Literal))
 		if err != nil {
@@ -180,7 +182,7 @@ func (p *Parser) parseSelectExpression() (Expression, error) {
 }
 
 func (p *Parser) parseSelectTableName() (string, error) {
-	if p.tokens[p.pos].Type != TokenIdentifier {
+	if p.tokens[p.pos].Type != tokens.TokenIdentifier {
 		return "", fmt.Errorf("unexpected token %s", p.tokens[p.pos].Literal)
 	}
 	return p.tokens[p.pos].Literal, nil

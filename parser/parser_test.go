@@ -1,27 +1,29 @@
-package sqlparser
+package parser
 
 import (
 	"errors"
 	"reflect"
 	"testing"
+
+	"github.com/sanemat/go-sql-parser/tokens"
 )
 
 func TestParser(t *testing.T) {
 	tests := []struct {
 		name    string
-		input   []Token
+		input   []tokens.Token
 		want    Node
 		wantErr error
 	}{
 		{
 			name: "simple select",
-			input: []Token{
-				{Type: TokenSelect, Literal: "select"},
-				{Type: TokenIdentifier, Literal: "column1"},
-				{Type: TokenFrom, Literal: "from"},
-				{Type: TokenIdentifier, Literal: "tablea"},
-				{Type: TokenSemicolon, Literal: ";"},
-				{Type: TokenEOF, Literal: ""},
+			input: []tokens.Token{
+				{Type: tokens.TokenSelect, Literal: "select"},
+				{Type: tokens.TokenIdentifier, Literal: "column1"},
+				{Type: tokens.TokenFrom, Literal: "from"},
+				{Type: tokens.TokenIdentifier, Literal: "tablea"},
+				{Type: tokens.TokenSemicolon, Literal: ";"},
+				{Type: tokens.TokenEOF, Literal: ""},
 			},
 			want: []Node{
 				&SelectStatement{
@@ -35,15 +37,15 @@ func TestParser(t *testing.T) {
 		},
 		{
 			name: "select multiple columns",
-			input: []Token{
-				{Type: TokenSelect, Literal: "select"},
-				{Type: TokenIdentifier, Literal: "id"},
-				{Type: TokenComma, Literal: ","},
-				{Type: TokenIdentifier, Literal: "title"},
-				{Type: TokenFrom, Literal: "from"},
-				{Type: TokenIdentifier, Literal: "table1"},
-				{Type: TokenSemicolon, Literal: ";"},
-				{Type: TokenEOF, Literal: ""},
+			input: []tokens.Token{
+				{Type: tokens.TokenSelect, Literal: "select"},
+				{Type: tokens.TokenIdentifier, Literal: "id"},
+				{Type: tokens.TokenComma, Literal: ","},
+				{Type: tokens.TokenIdentifier, Literal: "title"},
+				{Type: tokens.TokenFrom, Literal: "from"},
+				{Type: tokens.TokenIdentifier, Literal: "table1"},
+				{Type: tokens.TokenSemicolon, Literal: ";"},
+				{Type: tokens.TokenEOF, Literal: ""},
 			},
 			want: []Node{
 				&SelectStatement{
@@ -58,11 +60,11 @@ func TestParser(t *testing.T) {
 		},
 		{
 			name: "select 1;",
-			input: []Token{
-				{Type: TokenSelect, Literal: "select"},
-				{Type: TokenNumericLiteral, Literal: "1"},
-				{Type: TokenSemicolon, Literal: ";"},
-				{Type: TokenEOF, Literal: ""},
+			input: []tokens.Token{
+				{Type: tokens.TokenSelect, Literal: "select"},
+				{Type: tokens.TokenNumericLiteral, Literal: "1"},
+				{Type: tokens.TokenSemicolon, Literal: ";"},
+				{Type: tokens.TokenEOF, Literal: ""},
 			},
 			want: []Node{
 				&SelectStatement{
@@ -76,11 +78,11 @@ func TestParser(t *testing.T) {
 		},
 		{
 			name: "select null",
-			input: []Token{
-				{Type: TokenSelect, Literal: "select"},
-				{Type: TokenNull, Literal: "null"},
-				{Type: TokenSemicolon, Literal: ";"},
-				{Type: TokenEOF, Literal: ""},
+			input: []tokens.Token{
+				{Type: tokens.TokenSelect, Literal: "select"},
+				{Type: tokens.TokenNull, Literal: "null"},
+				{Type: tokens.TokenSemicolon, Literal: ";"},
+				{Type: tokens.TokenEOF, Literal: ""},
 			},
 			want: []Node{
 				&SelectStatement{
@@ -94,11 +96,11 @@ func TestParser(t *testing.T) {
 		},
 		{
 			name: "select bool",
-			input: []Token{
-				{Type: TokenSelect, Literal: "select"},
-				{Type: TokenBooleanLiteral, Literal: "false"},
-				{Type: TokenSemicolon, Literal: ";"},
-				{Type: TokenEOF, Literal: ""},
+			input: []tokens.Token{
+				{Type: tokens.TokenSelect, Literal: "select"},
+				{Type: tokens.TokenBooleanLiteral, Literal: "false"},
+				{Type: tokens.TokenSemicolon, Literal: ";"},
+				{Type: tokens.TokenEOF, Literal: ""},
 			},
 			want: []Node{
 				&SelectStatement{
@@ -112,11 +114,11 @@ func TestParser(t *testing.T) {
 		},
 		{
 			name: "select bool case insensitive",
-			input: []Token{
-				{Type: TokenSelect, Literal: "select"},
-				{Type: TokenBooleanLiteral, Literal: "tRue"},
-				{Type: TokenSemicolon, Literal: ";"},
-				{Type: TokenEOF, Literal: ""},
+			input: []tokens.Token{
+				{Type: tokens.TokenSelect, Literal: "select"},
+				{Type: tokens.TokenBooleanLiteral, Literal: "tRue"},
+				{Type: tokens.TokenSemicolon, Literal: ";"},
+				{Type: tokens.TokenEOF, Literal: ""},
 			},
 			want: []Node{
 				&SelectStatement{

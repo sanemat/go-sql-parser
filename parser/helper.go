@@ -1,4 +1,4 @@
-package sqlparser
+package parser
 
 // get pointer of value
 // https://github.com/golang/go/issues/45624#issuecomment-1843832599
