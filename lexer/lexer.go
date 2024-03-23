@@ -2,7 +2,6 @@ package lexer
 
 import (
 	"strings"
-	"unicode"
 	"unicode/utf8"
 
 	"github.com/sanemat/go-sql-parser/tokens"
@@ -149,14 +148,6 @@ func (l *Lexer) backup() {
 
 const eof = -1
 
-func isLetter(r rune) bool {
-	return unicode.IsLetter(r) || r == '_'
-}
-
-func isDigit(r rune) bool {
-	return unicode.IsDigit(r)
-}
-
 func lexSymbol(l *Lexer) stateFn {
 	symbol := l.next()
 	if tokenType, exists := symbols[symbol]; exists {
@@ -224,11 +215,6 @@ func lexWhitespace(l *Lexer) stateFn {
 	}
 	l.ignore() // Ignore whitespace span
 	return lexText
-}
-
-// Helper functions to classify characters
-func isWhitespace(r rune) bool {
-	return unicode.IsSpace(r)
 }
 
 // lexNumeric scans a numeric identifier.
