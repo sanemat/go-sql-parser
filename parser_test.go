@@ -84,6 +84,38 @@ func TestParser(t *testing.T) {
 				Where: nil,
 			},
 		},
+		{
+			name: "select bool",
+			input: []Token{
+				{Type: TokenSelect, Literal: "select"},
+				{Type: TokenBooleanLiteral, Literal: "false"},
+				{Type: TokenSemicolon, Literal: ";"},
+				{Type: TokenEOF, Literal: ""},
+			},
+			want: &SelectStatement{
+				Expressions: []Expression{
+					&BooleanLiteral{Value: false},
+				},
+				Table: nil,
+				Where: nil,
+			},
+		},
+		{
+			name: "select bool case insensitive",
+			input: []Token{
+				{Type: TokenSelect, Literal: "select"},
+				{Type: TokenBooleanLiteral, Literal: "tRue"},
+				{Type: TokenSemicolon, Literal: ";"},
+				{Type: TokenEOF, Literal: ""},
+			},
+			want: &SelectStatement{
+				Expressions: []Expression{
+					&BooleanLiteral{Value: true},
+				},
+				Table: nil,
+				Where: nil,
+			},
+		},
 	}
 
 	for _, tt := range tests {

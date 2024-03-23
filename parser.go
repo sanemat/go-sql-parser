@@ -34,6 +34,10 @@ type StringLiteral struct {
 type NullValue struct {
 }
 
+type BooleanLiteral struct {
+	Value bool
+}
+
 // SelectStatement represents a parsed SELECT statement
 type SelectStatement struct {
 	Expressions []Expression
@@ -149,6 +153,13 @@ func (p *Parser) parseSelectExpression() (Expression, error) {
 	case TokenNull:
 		p.pos++
 		return &NullValue{}, nil
+	case TokenBooleanLiteral:
+		p.pos++
+		bl, err := strconv.ParseBool(strings.ToLower(token.Literal))
+		if err != nil {
+			return nil, fmt.Errorf("parseSelectExpression strconv.ParseBool str %s, err: %w", token.Literal, err)
+		}
+		return &BooleanLiteral{Value: bl}, nil
 	default:
 		return nil, fmt.Errorf("unexpected token %s", token.Literal)
 	}
