@@ -130,6 +130,30 @@ func TestParser(t *testing.T) {
 				},
 			},
 		},
+		{
+			name: "multiple statements",
+			input: []tokens.Token{
+				{Type: tokens.TokenSelect, Literal: "select"},
+				{Type: tokens.TokenNumericLiteral, Literal: "1"},
+				{Type: tokens.TokenSemicolon, Literal: ";"},
+				{Type: tokens.TokenSelect, Literal: "select"},
+				{Type: tokens.TokenNumericLiteral, Literal: "2"},
+				{Type: tokens.TokenSemicolon, Literal: ";"},
+				{Type: tokens.TokenEOF, Literal: ""},
+			},
+			want: []Node{
+				&SelectStatement{
+					Expressions: []Expression{
+						&NumericLiteral{Value: 1},
+					},
+				},
+				&SelectStatement{
+					Expressions: []Expression{
+						&NumericLiteral{Value: 2},
+					},
+				},
+			},
+		},
 	}
 
 	for _, tt := range tests {

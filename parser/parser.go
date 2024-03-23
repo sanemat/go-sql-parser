@@ -68,14 +68,19 @@ func NewParser(tokens []tokens.Token) *Parser {
 // Parse starts the parsing process and returns the ASTs
 func (p *Parser) Parse() ([]Node, error) {
 	var statements []Node
-	if len(p.tokens) == 0 {
-		return nil, fmt.Errorf("no tokens to parse")
+	for p.pos < len(p.tokens) {
+		if p.tokens[p.pos].Type == tokens.TokenEOF {
+			break
+		}
+		stmt, err := p.parseStatement()
+		if err != nil {
+			return nil, fmt.Errorf("parseStatement, err: %w", err)
+		}
+		statements = append(statements, stmt)
+		if p.tokens[p.pos].Type == tokens.TokenSemicolon {
+			p.pos++ // Skip the semicolon.
+		}
 	}
-	stmt, err := p.parseStatement()
-	if err != nil {
-		return nil, fmt.Errorf("parseStatement, err: %w", err)
-	}
-	statements = append(statements, stmt)
 	return statements, nil
 }
 
@@ -93,7 +98,7 @@ func (p *Parser) parseStatement() (Node, error) {
 		// return p.parseInsert() // Assuming you have a parseInsert method
 		return nil, fmt.Errorf("parseInsert is not implemented yet")
 	default:
-		return nil, fmt.Errorf("unsupported statement type: %v", p.tokens[p.pos].Literal)
+		return nil, fmt.Errorf("unsupported statement type: %v, literal: %s, at position %d", token.Type, token.Literal, p.pos)
 	}
 }
 
@@ -182,8 +187,11 @@ func (p *Parser) parseSelectExpression() (Expression, error) {
 }
 
 func (p *Parser) parseSelectTableName() (string, error) {
+	// Ensure the current token is an identifier (e.g., table name).
 	if p.tokens[p.pos].Type != tokens.TokenIdentifier {
-		return "", fmt.Errorf("unexpected token %s", p.tokens[p.pos].Literal)
+		return "", fmt.Errorf("expected table name, found %s", p.tokens[p.pos].Literal)
 	}
-	return p.tokens[p.pos].Literal, nil
+	tableName := p.tokens[p.pos].Literal
+	p.pos++ // Move past the table name.
+	return tableName, nil
 }
