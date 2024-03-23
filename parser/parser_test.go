@@ -138,19 +138,19 @@ func TestParser(t *testing.T) {
 			got, err := p.Parse()
 			if tt.wantErr == nil {
 				if err != nil {
-					t.Errorf("Praser.Parse() error = %+v, at position %d, want %+v", err, p.pos, tt.want)
+					t.Errorf("Praser.Parse() error = %v, at position %d, want %v", err, p.pos, tt.want)
 					return
 				}
 				if !reflect.DeepEqual(got, tt.want) {
-					t.Errorf("Parser.Parse() = %+v, want %+v", got, tt.want)
+					t.Errorf("Parser.Parse() = %v, want %v", got, tt.want)
 				}
 			} else {
 				if err == nil {
-					t.Errorf("Parser.Parse() = %+v, wantErr %+v", got, tt.wantErr)
+					t.Errorf("Parser.Parse() = %v, wantErr %v", got, tt.wantErr)
 					return
 				}
 				if !errors.Is(err, tt.wantErr) {
-					t.Errorf("Parser.Parse() error = %+v, at position %d, wantErr %+v", err, p.pos, tt.wantErr)
+					t.Errorf("Parser.Parse() error = %v, at position %d, wantErr %v", err, p.pos, tt.wantErr)
 				}
 			}
 		})
