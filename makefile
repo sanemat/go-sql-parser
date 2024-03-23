@@ -5,7 +5,7 @@ u := $(if $(update),-u)
 
 .PHONY: test
 test: download
-	go test
+	go test ./...
 
 .PHONY: download
 download:

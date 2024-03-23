@@ -1,39 +1,41 @@
-package sqlparser
+package lexer
 
 import (
 	"strings"
 	"unicode"
 	"unicode/utf8"
+
+	"github.com/sanemat/go-sql-parser/tokens"
 )
 
 // keywords defines SQL keywords to be recognized.
-var keywords = map[string]TokenType{
-	"SELECT": TokenSelect,
-	"FROM":   TokenFrom,
-	"NULL":   TokenNull,
-	"TRUE":   TokenBooleanLiteral,
-	"FALSE":  TokenBooleanLiteral,
+var keywords = map[string]tokens.TokenType{
+	"SELECT": tokens.TokenSelect,
+	"FROM":   tokens.TokenFrom,
+	"NULL":   tokens.TokenNull,
+	"TRUE":   tokens.TokenBooleanLiteral,
+	"FALSE":  tokens.TokenBooleanLiteral,
 	// Add more SQL keywords here...
 }
 
-var symbols = map[rune]TokenType{
-	';': TokenSemicolon,
-	',': TokenComma,
-	'(': TokenSymbol,
-	')': TokenSymbol,
-	'=': TokenSymbol,
-	'*': TokenSymbol,
-	'+': TokenSymbol,
-	'-': TokenSymbol,
-	'/': TokenSymbol,
+var symbols = map[rune]tokens.TokenType{
+	';': tokens.TokenSemicolon,
+	',': tokens.TokenComma,
+	'(': tokens.TokenSymbol,
+	')': tokens.TokenSymbol,
+	'=': tokens.TokenSymbol,
+	'*': tokens.TokenSymbol,
+	'+': tokens.TokenSymbol,
+	'-': tokens.TokenSymbol,
+	'/': tokens.TokenSymbol,
 	// Add more symbols as needed.
 }
 
 // Lexer holds the state of the scanner.
 type Lexer struct {
-	input                  string  // Input string being scanned.
-	start, position, width int     // Start position of this item, current position, and width of last rune.
-	tokens                 []Token // Slice of tokens identified.
+	input                  string         // Input string being scanned.
+	start, position, width int            // Start position of this item, current position, and width of last rune.
+	tokens                 []tokens.Token // Slice of tokens identified.
 }
 
 // NewLexer returns a new instance of Lexer.
@@ -42,7 +44,7 @@ func NewLexer(input string) *Lexer {
 }
 
 // Lex scans the input string and produces a slice of tokens.
-func (l *Lexer) Lex() []Token {
+func (l *Lexer) Lex() []tokens.Token {
 	for state := lexText; state != nil; {
 		state = state(l)
 	}
@@ -56,42 +58,42 @@ func lexText(l *Lexer) stateFn {
 		case l.peek() == '-' && l.peekAhead(1) == '-':
 			// Detected start of a comment
 			if l.position > l.start {
-				l.emit(TokenIdentifier) // Emit any pending identifier before the comment
+				l.emit(tokens.TokenIdentifier) // Emit any pending identifier before the comment
 			}
 			return lexComment // Transition to comment handling
 		case isLetter(l.peek()):
 			// If we encounter a letter and we're not currently processing a token,
 			// it's time to handle an identifier or keyword.
 			if l.position > l.start {
-				l.emit(TokenIdentifier) // This may not be necessary depending on your overall design.
+				l.emit(tokens.TokenIdentifier) // This may not be necessary depending on your overall design.
 			}
 			return lexIdentifier
 		case isDigit(l.peek()):
 			if l.position > l.start {
-				l.emit(TokenIdentifier) // This may not be necessary depending on your overall design.
+				l.emit(tokens.TokenIdentifier) // This may not be necessary depending on your overall design.
 			}
 			return lexNumeric
 		case isWhitespace(l.peek()):
 			if l.position > l.start {
-				l.emit(TokenIdentifier) // Emit identifier if whitespace follows directly after
+				l.emit(tokens.TokenIdentifier) // Emit identifier if whitespace follows directly after
 			}
 			return lexWhitespace
 		case l.peek() == eof:
 			// End of file; if there's any unemitted token, emit it as an identifier.
 			if l.position > l.start {
-				l.emit(TokenIdentifier)
+				l.emit(tokens.TokenIdentifier)
 			}
-			l.emit(TokenEOF) // Emit EOF token
-			return nil       // No next state, lexing is complete
+			l.emit(tokens.TokenEOF) // Emit EOF token
+			return nil              // No next state, lexing is complete
 		case isSymbol(l.peek()):
 			if l.position > l.start {
-				l.emit(TokenIdentifier)
+				l.emit(tokens.TokenIdentifier)
 			}
 			return lexSymbol // Transition to a symbol handling state
 			// Handle other cases...
 		default:
 			// The lexer encounters a character that does not match any known patterns
-			l.emit(TokenError)
+			l.emit(tokens.TokenError)
 			return nil // Transition to an error state or halt lexing.
 		}
 	}
@@ -106,7 +108,7 @@ func lexIdentifier(l *Lexer) stateFn {
 	if tokType, isKeyword := keywords[strings.ToUpper(word)]; isKeyword {
 		l.emit(tokType)
 	} else {
-		l.emit(TokenIdentifier)
+		l.emit(tokens.TokenIdentifier)
 	}
 	return lexText
 }
@@ -115,8 +117,8 @@ func lexIdentifier(l *Lexer) stateFn {
 // Each state function processes part of the input string and transitions the lexer to the next appropriate state.
 type stateFn func(*Lexer) stateFn
 
-func (l *Lexer) emit(t TokenType) {
-	l.tokens = append(l.tokens, Token{Type: t, Literal: l.input[l.start:l.position]})
+func (l *Lexer) emit(t tokens.TokenType) {
+	l.tokens = append(l.tokens, tokens.Token{Type: t, Literal: l.input[l.start:l.position]})
 	l.start = l.position
 }
 
@@ -187,17 +189,17 @@ func lexComment(l *Lexer) stateFn {
 	// commentText = strings.TrimSpace(commentText)
 
 	// Emit the captured comment as a single token
-	l.emitToken(TokenComment, commentText)
+	l.emitToken(tokens.TokenComment, commentText)
 
 	if l.peek() == eof {
-		l.emit(TokenEOF) // Ensure EOF is emitted if at end of file
+		l.emit(tokens.TokenEOF) // Ensure EOF is emitted if at end of file
 	}
 	return lexText // Return to the main lexing function
 }
 
 // emitToken is a helper to emit tokens with specific literals, simplifying token emission
-func (l *Lexer) emitToken(t TokenType, literal string) {
-	l.tokens = append(l.tokens, Token{Type: t, Literal: literal})
+func (l *Lexer) emitToken(t tokens.TokenType, literal string) {
+	l.tokens = append(l.tokens, tokens.Token{Type: t, Literal: literal})
 	l.start = l.position // Reset the start position for the next token
 }
 
@@ -247,6 +249,6 @@ func lexNumeric(l *Lexer) stateFn {
 	}
 
 	num := l.input[l.start:l.position]
-	l.emitToken(TokenNumericLiteral, num)
+	l.emitToken(tokens.TokenNumericLiteral, num)
 	return lexText
 }
