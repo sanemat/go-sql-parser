@@ -8,29 +8,15 @@ import (
 	"github.com/sanemat/go-sql-parser/tokens"
 )
 
-type ColumnExpression struct {
-	Name string
+// Parser holds the state of the parser.
+type Parser struct {
+	tokens []tokens.Token
+	pos    int // current position in the token slice
 }
 
-type BinaryExpression struct {
-	Left     Expression
-	Operator string
-	Right    Expression
-}
-
-type NumericLiteral struct {
-	Value float64
-}
-
-type StringLiteral struct {
-	Value string
-}
-
-type NullValue struct {
-}
-
-type BooleanLiteral struct {
-	Value bool
+// NewParser creates a new Parser instance.
+func NewParser(tokens []tokens.Token) *Parser {
+	return &Parser{tokens: tokens}
 }
 
 // Parse starts the parsing process and returns the ASTs
@@ -162,38 +148,4 @@ func (p *Parser) parseSelectTableName() (string, error) {
 	tableName := p.tokens[p.pos].Literal
 	p.pos++ // Move past the table name.
 	return tableName, nil
-}
-
-func (s *SelectStatement) String() string {
-	expressions := make([]string, len(s.Expressions))
-	for i, expr := range s.Expressions {
-		expressions[i] = expr.String()
-	}
-	tableName := "nil"
-	if s.Table != nil {
-		tableName = *s.Table
-	}
-	return fmt.Sprintf(
-		"SelectStatement(Expressions: [%s], Table: %s)",
-		strings.Join(expressions, ", "), tableName)
-}
-
-func (c *ColumnExpression) String() string {
-	return fmt.Sprintf("ColumnExpression(%s)", c.Name)
-}
-
-func (n *NumericLiteral) String() string {
-	return fmt.Sprintf("NumericLiteral(%f)", n.Value)
-}
-
-func (s *StringLiteral) String() string {
-	return fmt.Sprintf("StringLiteral('%s')", s.Value)
-}
-
-func (n *NullValue) String() string {
-	return "NullValue(NULL)"
-}
-
-func (b *BooleanLiteral) String() string {
-	return fmt.Sprintf("BooleanLiteral(%t)", b.Value)
 }
