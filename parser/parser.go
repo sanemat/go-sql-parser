@@ -68,14 +68,19 @@ func NewParser(tokens []tokens.Token) *Parser {
 // Parse starts the parsing process and returns the ASTs
 func (p *Parser) Parse() ([]Node, error) {
 	var statements []Node
-	if len(p.tokens) == 0 {
-		return nil, fmt.Errorf("no tokens to parse")
+	for p.pos < len(p.tokens) {
+		if p.tokens[p.pos].Type == tokens.TokenEOF {
+			break
+		}
+		stmt, err := p.parseStatement()
+		if err != nil {
+			return nil, fmt.Errorf("parseStatement, err: %w", err)
+		}
+		statements = append(statements, stmt)
+		if p.tokens[p.pos].Type == tokens.TokenSemicolon {
+			p.pos++ // Skip the semicolon.
+		}
 	}
-	stmt, err := p.parseStatement()
-	if err != nil {
-		return nil, fmt.Errorf("parseStatement, err: %w", err)
-	}
-	statements = append(statements, stmt)
 	return statements, nil
 }
 
