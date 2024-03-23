@@ -140,6 +140,37 @@ func TestLexer(t *testing.T) {
 				{Type: tokens.TokenEOF, Literal: ""},
 			},
 		},
+		{
+			"string",
+			"'text'",
+			[]tokens.Token{
+				{Type: tokens.TokenStringLiteral, Literal: "'text'"},
+				{Type: tokens.TokenEOF, Literal: ""},
+			},
+		},
+		{
+			"string with escaped quote",
+			"'O''Reilly'",
+			[]tokens.Token{
+				{Type: tokens.TokenStringLiteral, Literal: "'O''Reilly'"},
+				{Type: tokens.TokenEOF, Literal: ""},
+			},
+		},
+		{
+			"unterminated string",
+			"'this string has no end",
+			[]tokens.Token{
+				{Type: tokens.TokenError, Literal: "'this string has no end"},
+			},
+		},
+		{
+			"empty string",
+			"''",
+			[]tokens.Token{
+				{Type: tokens.TokenStringLiteral, Literal: "''"},
+				{Type: tokens.TokenEOF, Literal: ""},
+			},
+		},
 	}
 
 	for _, tt := range tests {
