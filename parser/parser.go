@@ -98,7 +98,7 @@ func (p *Parser) parseStatement() (Node, error) {
 		// return p.parseInsert() // Assuming you have a parseInsert method
 		return nil, fmt.Errorf("parseInsert is not implemented yet")
 	default:
-		return nil, fmt.Errorf("unsupported statement type: %v", p.tokens[p.pos].Literal)
+		return nil, fmt.Errorf("unsupported statement type: %v, literal: %s, at position %d", token.Type, token.Literal, p.pos)
 	}
 }
 
