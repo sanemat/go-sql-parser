@@ -187,8 +187,11 @@ func (p *Parser) parseSelectExpression() (Expression, error) {
 }
 
 func (p *Parser) parseSelectTableName() (string, error) {
+	// Ensure the current token is an identifier (e.g., table name).
 	if p.tokens[p.pos].Type != tokens.TokenIdentifier {
-		return "", fmt.Errorf("unexpected token %s", p.tokens[p.pos].Literal)
+		return "", fmt.Errorf("expected table name, found %s", p.tokens[p.pos].Literal)
 	}
-	return p.tokens[p.pos].Literal, nil
+	tableName := p.tokens[p.pos].Literal
+	p.pos++ // Move past the table name.
+	return tableName, nil
 }
