@@ -26,6 +26,14 @@ func TestTokenRawValue(t *testing.T) {
 			},
 			expected: "text",
 		},
+		{
+			name: "string literal with quote",
+			token: Token{
+				Type:    TokenStringLiteral,
+				Literal: "'O''Reilly'",
+			},
+			expected: "O'Reilly",
+		},
 	}
 
 	for _, tt := range tests {

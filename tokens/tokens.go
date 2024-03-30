@@ -45,7 +45,8 @@ func (t Token) RawValue() string {
 	case TokenStringLiteral:
 		// Standard SQL single-quoted strings
 		if strings.HasPrefix(t.Literal, "'") && strings.HasSuffix(t.Literal, "'") {
-			return t.Literal[1 : len(t.Literal)-1]
+			unquoted := t.Literal[1 : len(t.Literal)-1]
+			return strings.ReplaceAll(unquoted, "''", "'")
 		}
 	}
 	return t.Literal
