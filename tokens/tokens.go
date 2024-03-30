@@ -1,6 +1,9 @@
 package tokens
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 // TokenType defines the type of lexed tokens.
 type TokenType int
@@ -35,4 +38,15 @@ type Token struct {
 
 func (t Token) String() string {
 	return fmt.Sprintf("token Type: %d, Literal: %s", t.Type, t.Literal)
+}
+
+func (t Token) RawValue() string {
+	switch t.Type {
+	case TokenStringLiteral:
+		// Standard SQL single-quoted strings
+		if strings.HasPrefix(t.Literal, "'") && strings.HasSuffix(t.Literal, "'") {
+			return t.Literal[1 : len(t.Literal)-1]
+		}
+	}
+	return t.Literal
 }
