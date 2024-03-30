@@ -154,6 +154,42 @@ func TestParser(t *testing.T) {
 				},
 			},
 		},
+		{
+			name: "select text",
+			input: []tokens.Token{
+				{Type: tokens.TokenSelect, Literal: "select"},
+				{Type: tokens.TokenStringLiteral, Literal: "'text'"},
+				{Type: tokens.TokenSemicolon, Literal: ";"},
+				{Type: tokens.TokenEOF, Literal: ""},
+			},
+			want: []Node{
+				&SelectStatement{
+					Expressions: []Expression{
+						&StringLiteral{Value: "text"},
+					},
+					Table: nil,
+					Where: nil,
+				},
+			},
+		},
+		{
+			name: "select text with single quote",
+			input: []tokens.Token{
+				{Type: tokens.TokenSelect, Literal: "select"},
+				{Type: tokens.TokenStringLiteral, Literal: "'O''Reilly'"},
+				{Type: tokens.TokenSemicolon, Literal: ";"},
+				{Type: tokens.TokenEOF, Literal: ""},
+			},
+			want: []Node{
+				&SelectStatement{
+					Expressions: []Expression{
+						&StringLiteral{Value: "O'Reilly"},
+					},
+					Table: nil,
+					Where: nil,
+				},
+			},
+		},
 	}
 
 	for _, tt := range tests {
