@@ -30,20 +30,23 @@ func (p *Parser) parseSelect() (*SelectStatement, error) {
 	// For simplicity, this function assumes the tokens match the expected pattern.
 	// In practice, you would check token types and handle errors.
 	p.pos++ // Skip the SELECT token
-	expressions, err := p.parseSelectExpressions()
+	expressions, err := p.parseExpressions()
 	if err != nil {
 		return &SelectStatement{}, err
 	}
 
-	token := p.tokens[p.pos]
 	var tableNamePtr *string
-	if token.Type == tokens.TokenFrom {
+	if p.peek().Type == tokens.TokenFrom {
 		p.pos++ // Skip the FROM token
 		tableName, err := p.parseSelectTableName()
 		if err != nil {
 			return &SelectStatement{}, err
 		}
 		tableNamePtr = &tableName
+	}
+	// Skip until the end of statement or start of the next statement
+	for p.peek().Type != tokens.TokenSemicolon && p.peek().Type != tokens.TokenEOF {
+		p.pos++
 	}
 	// Optionally parse WHERE clause...
 	return &SelectStatement{
@@ -52,65 +55,61 @@ func (p *Parser) parseSelect() (*SelectStatement, error) {
 	}, nil
 }
 
-func (p *Parser) parseSelectExpressions() ([]Expression, error) {
+func (p *Parser) parseExpressions() ([]Expression, error) {
 	var expressions []Expression
 
-	// Continue looping until "FROM" is encountered or until semicolon
-	for !(p.tokens[p.pos].Type == tokens.TokenFrom || p.tokens[p.pos].Type == tokens.TokenSemicolon) {
-		expr, err := p.parseSelectExpression()
-		if err != nil {
-			return nil, fmt.Errorf("parseSelectExpression: %w", err)
+	for {
+		token := p.peek()
+		p.pos++
+
+		var expr Expression
+		var err error
+		switch token.Type {
+		case tokens.TokenIdentifier:
+			expr = &ColumnExpression{Name: token.Literal}
+		case tokens.TokenNumericLiteral, tokens.TokenStringLiteral, tokens.TokenBooleanLiteral, tokens.TokenNull:
+			expr, err = p.parseLiteral(token)
+		default:
+			err = fmt.Errorf("unexpected token in expression: %v", token.Literal)
 		}
+		if err != nil {
+			return nil, err
+		}
+
 		expressions = append(expressions, expr)
 
-		// If next token is a comma, skip it
-		nextToken := p.tokens[p.pos]
-		if nextToken.Type == tokens.TokenComma {
-			p.pos++ // Move forward the expression token
+		if p.peek().Type != tokens.TokenComma {
+			break
 		}
+		p.pos++ // Skip the comma
 	}
-
-	// Handle edge case: No expressions
-	if len(expressions) == 0 {
-		return nil, fmt.Errorf("no expressions found in select statement")
-	}
-
 	return expressions, nil
 }
 
-func (p *Parser) parseSelectExpression() (Expression, error) {
-	// This is a simplified placeholder. You'll need to replace this with actual logic
-	// to parse different types of expressions based on your tokens.
-	token := p.tokens[p.pos]
+func (p *Parser) parseLiteral(token tokens.Token) (Expression, error) {
 	switch token.Type {
-	case tokens.TokenIdentifier:
-		// This could be a column name or the beginning of a function call
-		p.pos++
-		return &ColumnExpression{Name: token.Literal}, nil
 	case tokens.TokenNumericLiteral:
-		p.pos++
-		numFloat, err := strconv.ParseFloat(token.Literal, 64)
+		value, err := strconv.ParseFloat(token.Literal, 64)
 		if err != nil {
-			return nil, fmt.Errorf("parseSelectExpression strconv.ParseFloat num %s, err: %w", token.Literal, err)
+			return nil,
+				fmt.Errorf("error parsing numeric literal: %s, err: %w",
+					token.Literal, err)
 		}
-		return &NumericLiteral{Value: numFloat}, nil
+		return &NumericLiteral{Value: value}, nil
 	case tokens.TokenStringLiteral:
-		// Handle string literals by removing quotes and creating a StringLiteral expression
-		p.pos++
-		rawValue := token.RawValue()
-		return &StringLiteral{Value: rawValue}, nil
-	case tokens.TokenNull:
-		p.pos++
-		return &NullValue{}, nil
+		return &StringLiteral{Value: token.RawValue()}, nil
 	case tokens.TokenBooleanLiteral:
-		p.pos++
-		bl, err := strconv.ParseBool(strings.ToLower(token.Literal))
+		value, err := strconv.ParseBool(strings.ToLower(token.Literal))
 		if err != nil {
-			return nil, fmt.Errorf("parseSelectExpression strconv.ParseBool str %s, err: %w", token.Literal, err)
+			return nil,
+				fmt.Errorf("error parsing boolean literal:str %s, err: %w",
+					token.Literal, err)
 		}
-		return &BooleanLiteral{Value: bl}, nil
+		return &BooleanLiteral{Value: value}, nil
+	case tokens.TokenNull:
+		return &NullValue{}, nil
 	default:
-		return nil, fmt.Errorf("unexpected token %s", token.Literal)
+		return nil, fmt.Errorf("unexpected literal type: %v", token.Type)
 	}
 }
 
