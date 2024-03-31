@@ -14,7 +14,10 @@ type Parser struct {
 
 // NewParser creates a new Parser instance.
 func NewParser(tokens []tokens.Token) *Parser {
-	return &Parser{tokens: tokens}
+	return &Parser{
+		tokens: tokens,
+		pos:    0,
+	}
 }
 
 // Parse starts the parsing process and returns the ASTs
