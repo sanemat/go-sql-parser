@@ -12,7 +12,7 @@ func TestParser(t *testing.T) {
 	tests := []struct {
 		name    string
 		input   []tokens.Token
-		want    Node
+		want    []Node
 		wantErr error
 	}{
 		{
