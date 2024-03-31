@@ -19,15 +19,19 @@ var keywords = map[string]tokens.TokenType{
 }
 
 var symbols = map[string]tokens.TokenType{
-	";": tokens.TokenSemicolon,
-	",": tokens.TokenComma,
-	"(": tokens.TokenSymbol,
-	")": tokens.TokenSymbol,
-	"=": tokens.TokenSymbol,
-	"*": tokens.TokenSymbol,
-	"+": tokens.TokenSymbol,
-	"-": tokens.TokenSymbol,
-	"/": tokens.TokenSymbol,
+	";":  tokens.TokenSemicolon,
+	",":  tokens.TokenComma,
+	"(":  tokens.TokenSymbol,
+	")":  tokens.TokenSymbol,
+	"=":  tokens.TokenSymbol,
+	"*":  tokens.TokenSymbol,
+	"+":  tokens.TokenSymbol,
+	"-":  tokens.TokenSymbol,
+	"/":  tokens.TokenSymbol,
+	"<=": tokens.TokenLessThanOrEqual,
+	"<":  tokens.TokenLessThan,
+	">=": tokens.TokenGreaterThanOrEqual,
+	">":  tokens.TokenGreaterThan,
 	// Add more symbols as needed.
 }
 
