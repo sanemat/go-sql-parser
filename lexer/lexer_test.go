@@ -171,6 +171,38 @@ func TestLexer(t *testing.T) {
 				{Type: tokens.TokenEOF, Literal: ""},
 			},
 		},
+		{
+			"less than or equal to",
+			"<=",
+			[]tokens.Token{
+				{Type: tokens.TokenLessThanOrEqual, Literal: "<="},
+				{Type: tokens.TokenEOF, Literal: ""},
+			},
+		},
+		{
+			"less than",
+			"<",
+			[]tokens.Token{
+				{Type: tokens.TokenLessThan, Literal: "<"},
+				{Type: tokens.TokenEOF, Literal: ""},
+			},
+		},
+		{
+			"greater than or equal to",
+			">=",
+			[]tokens.Token{
+				{Type: tokens.TokenGreaterThanOrEqual, Literal: ">="},
+				{Type: tokens.TokenEOF, Literal: ""},
+			},
+		},
+		{
+			"greater than",
+			">",
+			[]tokens.Token{
+				{Type: tokens.TokenGreaterThan, Literal: ">"},
+				{Type: tokens.TokenEOF, Literal: ""},
+			},
+		},
 	}
 
 	for _, tt := range tests {

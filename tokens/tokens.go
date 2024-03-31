@@ -27,6 +27,10 @@ const (
 	TokenFrom
 	TokenComma
 	TokenSemicolon
+	TokenGreaterThan
+	TokenGreaterThanOrEqual
+	TokenLessThan
+	TokenLessThanOrEqual
 	// Extend with more token types as needed (e.g., TokenString, TokenNumber)
 )
 
