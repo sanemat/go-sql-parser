@@ -28,28 +28,27 @@ func (p *Parser) parseStatement() (Node, error) {
 
 // parseSelect parses a Query rule from the grammar
 func (p *Parser) parseSelect() (*SelectStatement, error) {
-	// For simplicity, this function assumes the tokens match the expected pattern.
-	// In practice, you would check token types and handle errors.
 	p.pos++ // Skip the SELECT token
 	expressions, err := p.parseSelectExpressions()
 	if err != nil {
-		return &SelectStatement{}, err
+		return nil, err
 	}
 
-	token := p.tokens[p.pos]
-	var tableNamePtr *string
-	if token.Type == tokens.TokenFrom {
+	var table *string
+	if p.peek().Type == tokens.TokenFrom {
 		p.pos++ // Skip the FROM token
-		tableName, err := p.parseSelectTableName()
-		if err != nil {
-			return &SelectStatement{}, err
-		}
-		tableNamePtr = &tableName
+		tableName := p.next().Literal
+		table = &tableName
 	}
-	// Optionally parse WHERE clause...
+
+	// Skip until the end of statement or start of the next statement
+	for !(p.peek().Type == tokens.TokenSemicolon || p.peek().Type == tokens.TokenEOF) {
+		p.pos++
+	}
+
 	return &SelectStatement{
 		Expressions: expressions,
-		Table:       tableNamePtr,
+		Table:       table,
 	}, nil
 }
 
