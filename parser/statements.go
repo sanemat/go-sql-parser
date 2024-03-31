@@ -45,7 +45,7 @@ func (p *Parser) parseSelect() (*SelectStatement, error) {
 		tableNamePtr = &tableName
 	}
 	// Skip until the end of statement or start of the next statement
-	for p.peek().Type != tokens.TokenSemicolon && p.peek().Type != tokens.TokenEOF {
+	for !(p.peek().Type == tokens.TokenSemicolon || p.peek().Type == tokens.TokenEOF) {
 		p.pos++
 	}
 	// Optionally parse WHERE clause...
