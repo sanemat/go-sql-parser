@@ -55,3 +55,21 @@ func (t Token) RawValue() string {
 	}
 	return t.Literal
 }
+
+// TokenOperatorSet defines a set of operator tokens for easy reference.
+var TokenOperatorSet = []TokenType{
+	TokenGreaterThan,
+	TokenGreaterThanOrEqual,
+	TokenLessThan,
+	TokenLessThanOrEqual,
+}
+
+// IsOperator checks if a given token is an operator.
+func IsOperator(token TokenType) bool {
+	for _, t := range TokenOperatorSet {
+		if t == token {
+			return true
+		}
+	}
+	return false
+}
