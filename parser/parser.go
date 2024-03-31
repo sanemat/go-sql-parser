@@ -14,24 +14,33 @@ type Parser struct {
 
 // NewParser creates a new Parser instance.
 func NewParser(tokens []tokens.Token) *Parser {
-	return &Parser{tokens: tokens}
+	return &Parser{
+		tokens: tokens,
+		pos:    0,
+	}
 }
 
 // Parse starts the parsing process and returns the ASTs
 func (p *Parser) Parse() ([]Node, error) {
-	var statements []Node
-	for p.pos < len(p.tokens) {
-		if p.tokens[p.pos].Type == tokens.TokenEOF {
-			break
-		}
-		stmt, err := p.parseStatement()
+	var nodes []Node
+	for p.peek().Type != tokens.TokenEOF {
+		node, err := p.parseStatement()
 		if err != nil {
 			return nil, fmt.Errorf("parseStatement, err: %w", err)
 		}
-		statements = append(statements, stmt)
-		if p.tokens[p.pos].Type == tokens.TokenSemicolon {
-			p.pos++ // Skip the semicolon.
+		nodes = append(nodes, node)
+
+		if p.peek().Type == tokens.TokenSemicolon {
+			p.pos++ // Advance past the semicolon only if it's present
 		}
 	}
-	return statements, nil
+	return nodes, nil
+}
+
+func (p *Parser) peek() tokens.Token {
+	if p.pos >= len(p.tokens) {
+		// Return an EOF token if we're at or beyond the end of the tokens slice
+		return tokens.Token{Type: tokens.TokenEOF, Literal: ""}
+	}
+	return p.tokens[p.pos]
 }
