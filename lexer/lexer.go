@@ -18,16 +18,16 @@ var keywords = map[string]tokens.TokenType{
 	// Add more SQL keywords here...
 }
 
-var symbols = map[rune]tokens.TokenType{
-	';': tokens.TokenSemicolon,
-	',': tokens.TokenComma,
-	'(': tokens.TokenSymbol,
-	')': tokens.TokenSymbol,
-	'=': tokens.TokenSymbol,
-	'*': tokens.TokenSymbol,
-	'+': tokens.TokenSymbol,
-	'-': tokens.TokenSymbol,
-	'/': tokens.TokenSymbol,
+var symbols = map[string]tokens.TokenType{
+	";": tokens.TokenSemicolon,
+	",": tokens.TokenComma,
+	"(": tokens.TokenSymbol,
+	")": tokens.TokenSymbol,
+	"=": tokens.TokenSymbol,
+	"*": tokens.TokenSymbol,
+	"+": tokens.TokenSymbol,
+	"-": tokens.TokenSymbol,
+	"/": tokens.TokenSymbol,
 	// Add more symbols as needed.
 }
 
@@ -81,9 +81,19 @@ func (l *Lexer) backup() {
 	l.position -= l.width
 }
 
-func isSymbol(r rune) bool {
-	_, exists := symbols[r]
-	return exists
+func couldBeSymbol(l *Lexer) bool {
+	nextChar := string(l.peek())
+	// Check for a single character symbol
+	if _, exists := symbols[nextChar]; exists {
+		return true
+	}
+	nextTwoChars := nextChar + string(l.peekAhead(1))
+	// Check for a two-character symbol
+	if _, exists := symbols[nextTwoChars]; exists {
+		return true
+	}
+	// Extend this logic if you support symbols longer than two characters
+	return false
 }
 
 // emitToken is a helper to emit tokens with specific literals, simplifying token emission
