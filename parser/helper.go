@@ -24,3 +24,20 @@ func operatorToString(op tokens.TokenType) string {
 		return "unknown_operator"
 	}
 }
+
+// Helper function to check if a token type is a literal
+func isLiteral(tokenType tokens.TokenType) bool {
+	return tokenType == tokens.TokenNumericLiteral || tokenType == tokens.TokenStringLiteral ||
+		tokenType == tokens.TokenBooleanLiteral || tokenType == tokens.TokenNull
+}
+
+func isBinaryOperator(tokenType tokens.TokenType) bool {
+	// This set includes common binary operators. Extend this set based on your language specification.
+	switch tokenType {
+	case tokens.TokenLessThan, tokens.TokenGreaterThan,
+		tokens.TokenLessThanOrEqual, tokens.TokenGreaterThanOrEqual:
+		return true
+	default:
+		return false
+	}
+}
