@@ -95,6 +95,11 @@ func (p *Parser) parseSelectExpression() (Expression, error) {
 			return nil, fmt.Errorf("parseSelectExpression strconv.ParseFloat num %s, err: %w", token.Literal, err)
 		}
 		return &NumericLiteral{Value: numFloat}, nil
+	case tokens.TokenStringLiteral:
+		// Handle string literals by removing quotes and creating a StringLiteral expression
+		p.pos++
+		rawValue := token.RawValue()
+		return &StringLiteral{Value: rawValue}, nil
 	case tokens.TokenNull:
 		p.pos++
 		return &NullValue{}, nil
