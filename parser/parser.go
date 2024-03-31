@@ -44,3 +44,14 @@ func (p *Parser) peek() tokens.Token {
 	}
 	return p.tokens[p.pos]
 }
+
+func (p *Parser) next() tokens.Token {
+	// Use peek to get the current token without advancing
+	currentToken := p.peek()
+
+	// Then, advance the position to the next token
+	p.pos++
+
+	// Return the "peeked" current token, now that pos has been advanced
+	return currentToken
+}

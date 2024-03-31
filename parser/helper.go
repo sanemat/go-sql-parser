@@ -24,3 +24,9 @@ func operatorToString(op tokens.TokenType) string {
 		return "unknown_operator"
 	}
 }
+
+// Helper function to check if a token type is a literal
+func isLiteral(tokenType tokens.TokenType) bool {
+	return tokenType == tokens.TokenNumericLiteral || tokenType == tokens.TokenStringLiteral ||
+		tokenType == tokens.TokenBooleanLiteral || tokenType == tokens.TokenNull
+}
