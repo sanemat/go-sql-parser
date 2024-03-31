@@ -3,6 +3,8 @@ package parser
 import (
 	"fmt"
 	"testing"
+
+	"github.com/sanemat/go-sql-parser/tokens"
 )
 
 func TestNodeStringMethods(t *testing.T) {
@@ -60,6 +62,15 @@ func TestNodeStringMethods(t *testing.T) {
 			name:     "BooleanLiteral False",
 			node:     &BooleanLiteral{Value: false},
 			expected: "BooleanLiteral(false)",
+		},
+		{
+			name: "BinaryExpression",
+			node: &BinaryExpression{
+				Left:     &NumericLiteral{Value: 123},
+				Operator: tokens.TokenGreaterThan,
+				Right:    &NumericLiteral{Value: 234},
+			},
+			expected: "BinaryExpression(NumericLiteral(123.000000) > NumericLiteral(234.000000))",
 		},
 	}
 
