@@ -3,6 +3,8 @@ package parser
 import (
 	"fmt"
 	"strings"
+
+	"github.com/sanemat/go-sql-parser/tokens"
 )
 
 // Node represents a node in the Abstract Syntax Tree (AST).
@@ -51,8 +53,13 @@ func (c *ColumnExpression) String() string {
 
 type BinaryExpression struct {
 	Left     Expression
-	Operator string
+	Operator tokens.TokenType // use only operators
 	Right    Expression
+}
+
+func (s *BinaryExpression) String() string {
+	return fmt.Sprintf("BinaryExpression(%s %s %s)",
+		s.Left.String(), operatorToString(s.Operator), s.Right.String())
 }
 
 type NumericLiteral struct {
