@@ -79,29 +79,40 @@ func lexWhitespace(l *Lexer) stateFn {
 
 // Parses the symbol, applying the longest match principle.
 func lexSymbol(l *Lexer) stateFn {
-	maxLength := 3 // Update based on your longest symbol
-	symbolText := ""
+	maxLength := 3 // Adjust this based on the length of your longest symbol.
 	var longestMatch string
-	var tokenType tokens.TokenType
+	var matchType tokens.TokenType
 
-	// Iterate to collect up to maxLength characters
-	for i := 0; i < maxLength && l.peek() != eof; i++ {
-		symbolText += string(l.next()) // Consume and accumulate
+	// Iterate from the longest to the shortest possible symbols.
+	for length := maxLength; length > 0; length-- {
+		potentialSymbol := ""
+		for i := 0; i < length; i++ {
+			// Use peekAhead to build the potential symbol without consuming characters.
+			char := l.peekAhead(i)
+			if char == eof {
+				break // End of input reached.
+			}
+			potentialSymbol += string(char)
+		}
 
-		// Check if current accumulation is a known symbol
-		if typ, exists := symbols[symbolText]; exists {
-			longestMatch = symbolText // Update longest match found
-			tokenType = typ           // Update token type to emit
+		// Check if the built potentialSymbol matches any known symbol.
+		if typ, exists := symbols[potentialSymbol]; exists {
+			longestMatch = potentialSymbol
+			matchType = typ
+			break // Stop at the first (longest) match found.
 		}
 	}
 
 	if longestMatch != "" {
-		// Emit token for the longest symbol match found
-		l.emitToken(tokenType, longestMatch)
-		return lexText
+		// Consume the characters of the matched symbol.
+		for range longestMatch {
+			l.next() // Now actually consume the characters.
+		}
+		l.emitToken(matchType, longestMatch)
+		return lexText // Return to the main lexer loop.
 	}
 
-	// Emit an error if no symbol is found (should be rare due to couldBeSymbol's check)
+	// If no match is found, it might indicate a logic issue or unexpected input.
 	l.emit(tokens.TokenError)
 	return lexText
 }
