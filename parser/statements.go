@@ -59,15 +59,14 @@ func (p *Parser) parseExpressions() ([]Expression, error) {
 	var expressions []Expression
 
 	for {
-		token := p.peek()
-		p.pos++
+		token := p.next()
 
 		var expr Expression
 		var err error
-		switch token.Type {
-		case tokens.TokenIdentifier:
+		switch {
+		case token.Type == tokens.TokenIdentifier:
 			expr = &ColumnExpression{Name: token.Literal}
-		case tokens.TokenNumericLiteral, tokens.TokenStringLiteral, tokens.TokenBooleanLiteral, tokens.TokenNull:
+		case isLiteral(token.Type):
 			expr, err = p.parseLiteral(token)
 		default:
 			err = fmt.Errorf("unexpected token in expression: %v", token.Literal)
