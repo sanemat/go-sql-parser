@@ -26,7 +26,7 @@ func lexText(l *Lexer) stateFn {
 		case l.peek() == eof:
 			l.emit(tokens.TokenEOF)
 			return nil
-		case isSymbol(l.peek()):
+		case couldBeSymbol(l): // Check for symbols, including multi-character
 			return lexSymbol
 		default:
 			l.emit(tokens.TokenError)
@@ -77,12 +77,32 @@ func lexWhitespace(l *Lexer) stateFn {
 	return lexText
 }
 
-// lexSymbol handles the lexing of symbols.
+// Parses the symbol, applying the longest match principle.
 func lexSymbol(l *Lexer) stateFn {
-	symbol := l.next()
-	if tokenType, exists := symbols[symbol]; exists {
-		l.emitToken(tokenType, string(symbol))
+	maxLength := 3 // Update based on your longest symbol
+	symbolText := ""
+	var longestMatch string
+	var tokenType tokens.TokenType
+
+	// Iterate to collect up to maxLength characters
+	for i := 0; i < maxLength && l.peek() != eof; i++ {
+		symbolText += string(l.next()) // Consume and accumulate
+
+		// Check if current accumulation is a known symbol
+		if typ, exists := symbols[symbolText]; exists {
+			longestMatch = symbolText // Update longest match found
+			tokenType = typ           // Update token type to emit
+		}
 	}
+
+	if longestMatch != "" {
+		// Emit token for the longest symbol match found
+		l.emitToken(tokenType, longestMatch)
+		return lexText
+	}
+
+	// Emit an error if no symbol is found (should be rare due to couldBeSymbol's check)
+	l.emit(tokens.TokenError)
 	return lexText
 }
 
