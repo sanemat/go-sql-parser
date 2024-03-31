@@ -13,16 +13,15 @@ func (p *Parser) parseStatement() (Node, error) {
 	if len(p.tokens) == 0 {
 		return nil, fmt.Errorf("no tokens to parse")
 	}
-	token := p.tokens[p.pos]
 	// Check the first significant token to determine the statement type
 	switch {
-	case token.Type == tokens.TokenSelect:
+	case p.peek().Type == tokens.TokenSelect:
 		return p.parseSelect()
-	case strings.ToUpper(token.Literal) == "INSERT":
+	case strings.ToUpper(p.peek().Literal) == "INSERT":
 		// return p.parseInsert() // Assuming you have a parseInsert method
 		return nil, fmt.Errorf("parseInsert is not implemented yet")
 	default:
-		return nil, fmt.Errorf("unsupported statement type: %v, literal: %s, at position %d", token.Type, token.Literal, p.pos)
+		return nil, fmt.Errorf("unsupported statement type: %v, literal: %s, at position %d", p.peek().Type, p.peek().Literal, p.pos)
 	}
 }
 
